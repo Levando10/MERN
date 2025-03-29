@@ -9,7 +9,11 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: [
+      process.env.FRONTEND_URL || "http://localhost:3000",
+      "https://frontend-mern-fb6zovwys-mern-ecommerces-projects.vercel.app",
+    ],
+
     credentials: true,
   })
 );
