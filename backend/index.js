@@ -26,6 +26,10 @@ app.use(cookieParser());
 
 app.use("/api", router);
 
+app.use((request, response) => {
+  console.log("Request: " + request);
+  console.log("Response: " + response);
+})
 const PORT = process.env.PORT || 8080;
 
 connectDB()
