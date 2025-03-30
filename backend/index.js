@@ -27,8 +27,10 @@ app.use(cookieParser());
 app.use("/api", router);
 
 app.use((request, response) => {
-  console.log("Request: " + request);
-  console.log("Response: " + response);
+  console.log(` Request: ${request.route}\n
+                Payload: ${JSON.stringify(request.body)}\n
+                IP: ${request.ip}`);
+  console.log(` Response: ${JSON.stringify(response)}\n`)
 })
 const PORT = process.env.PORT || 8080;
 
