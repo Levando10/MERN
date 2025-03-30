@@ -7,6 +7,7 @@ import SummaryApi from "../common";
 import Context from "../context";
 import SweetAlert from "sweetalert";
 import Swal from "sweetalert2";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -55,6 +56,15 @@ const Login = () => {
       SweetAlert(
         "Incorrect password!",
         "Please check your password and try again.",
+        "error"
+      );
+      return;
+    }
+
+    if (dataApi.usePassword) {
+      SweetAlert(
+        "This email is already registered!",
+        "This email is already registered with a password. Please log in with your email and password.",
         "error"
       );
       return;
@@ -145,6 +155,28 @@ const Login = () => {
     }
   };
 
+  const handleGoogleSuccess = async (response) => {
+    try {
+      const res = await fetch(SummaryApi.googleLogin.url, {
+        method: SummaryApi.googleLogin.method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: response.credential }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        Swal.fire("Login Successful", "Welcome back!", "success");
+        navigate("/");
+      } else {
+        Swal.fire("Login Failed", data.message, "error");
+      }
+    } catch (error) {
+      Swal.fire("Error", "Google login failed!", "error");
+    }
+  };
+
   return (
     <section id="login">
       <div className="mx-auto container p-4">
@@ -197,6 +229,12 @@ const Login = () => {
             <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 w-full max-w-[150px] rounded-full hover:scale-110 transition-all mx-auto block mt-6">
               Login
             </button>
+            <div className="flex justify-center">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => Swal.fire("Google login failed!", "", "error")}
+              />
+            </div>
           </form>
 
           <p className="my-5">
