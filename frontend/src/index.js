@@ -8,7 +8,7 @@ import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-const clientGGId = process.env.REACT_APP_GG_CLIENT_ID;
+const clientGGId = "483449278493-ua9hfvdehhbc4u7h30a5m1fekvj5igo7.apps.googleusercontent.com";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   // <React.StrictMode>
