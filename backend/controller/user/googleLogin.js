@@ -37,6 +37,7 @@ async function googleLoginController(req, res) {
         name,
         profilePic: picture,
         googleId: sub,
+        role: "GENERAL",
         isVerified: true,
         isBanned: false,
       });
