@@ -146,7 +146,7 @@ const Login = () => {
         Swal.fire(
           "Password Reset Failed!",
           result.message ||
-            "An error occurred while resetting your password. Please try again later.",
+          "An error occurred while resetting your password. Please try again later.",
           "error"
         );
       }
@@ -167,8 +167,16 @@ const Login = () => {
 
       const data = await res.json();
       if (data.success) {
-        Swal.fire("Login Successful", "Welcome back!", "success");
-        navigate("/");
+        SweetAlert(
+          "Login google success!",
+          "Welcome back! You have successfully logged in!",
+          "success"
+        );
+        setTimeout(() => {
+          navigate("/");
+          fetchUserDetails();
+          fetchUserAddToCart();
+        }, 400);
       } else {
         Swal.fire({
           title: "Login Failed",
