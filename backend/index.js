@@ -26,11 +26,11 @@ app.use(cookieParser());
 
 app.use("/api", router);
 
-app.use((request, response) => {
-  console.log(` Request: ${request.route}\n
-                Payload: ${JSON.stringify(request.body)}\n
-                IP: ${request.ip}`);
-  console.log(` Response: ${JSON.stringify(response)}\n`)
+app.use((req, res, next) => {
+  res.on("finish", function() {
+    console.log(req.method, decodeURI(req.url), res.statusCode, JSON.stringify( res.json()));
+  });
+  next();
 })
 const PORT = process.env.PORT || 8080;
 
@@ -44,3 +44,10 @@ connectDB()
     console.error("❌ Không thể kết nối MongoDB:", err.message);
     process.exit(1);
   });
+
+  const createLog = (req, res, next) => {
+    res.on("finish", function() {
+      console.log(req.method, decodeURI(req.url), res.statusCode, res.);
+    });
+    next();
+  };
