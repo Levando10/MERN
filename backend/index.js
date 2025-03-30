@@ -28,7 +28,7 @@ app.use("/api", router);
 
 app.use((req, res, next) => {
   res.on("finish", function() {
-    console.log(req.method, decodeURI(req.url), res.statusCode, JSON.stringify( res.json()));
+    console.log(req.method, decodeURI(req.url), res.statusCode);
   });
   next();
 })
