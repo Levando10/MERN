@@ -94,6 +94,7 @@ const Login = () => {
         "Welcome back! You have successfully logged in!",
         "success"
       );
+
       setTimeout(() => {
         navigate("/");
         fetchUserDetails();
@@ -162,6 +163,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ token: response.credential }),
       });
 
@@ -172,6 +174,7 @@ const Login = () => {
           "Welcome back! You have successfully logged in!",
           "success"
         );
+
         setTimeout(() => {
           navigate("/");
           fetchUserDetails();
