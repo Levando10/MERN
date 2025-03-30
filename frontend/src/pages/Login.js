@@ -170,7 +170,13 @@ const Login = () => {
         Swal.fire("Login Successful", "Welcome back!", "success");
         navigate("/");
       } else {
-        Swal.fire("Login Failed", data.message, "error");
+        Swal.fire({
+          title: "Login Failed",
+          text: data.message,
+          icon: "error",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#DC2626",
+        });
       }
     } catch (error) {
       Swal.fire("Error", "Google login failed!", "error");
