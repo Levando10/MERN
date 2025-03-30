@@ -20,7 +20,6 @@ async function googleLoginController(req, res) {
     const { email, name, picture, sub } = ticket.getPayload();
 
     let user = await userModel.findOne({ email });
-    console.log(sub);
 
     if (user && !user.googleId) {
       return res.status(400).json({

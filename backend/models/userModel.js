@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     },
     password : String,
     profilePic : String,
+    googleId: String,
     role : String,
     phone: String,
     isVerified: { type: Boolean, default: false },
