@@ -6,7 +6,7 @@ const Logo = ({ width = 170, height = 50 }) => {
       width={width}
       height={height}
       viewBox="0 0 200 100"
-      xmlns="http://www.w3.org/2000/svg"
+      xmlns="https://www.w3.org/2000/svg"
     >
       {/* Nền */}
       <rect width="200" height="100" fill="white" />
