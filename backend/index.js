@@ -44,10 +44,3 @@ connectDB()
     console.error("❌ Không thể kết nối MongoDB:", err.message);
     process.exit(1);
   });
-
-  const createLog = (req, res, next) => {
-    res.on("finish", function() {
-      console.log(req.method, decodeURI(req.url), res.statusCode, res.);
-    });
-    next();
-  };
