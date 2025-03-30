@@ -74,7 +74,7 @@ async function googleLoginController(req, res) {
       sameSite: "None",
     };
 
-    res.cookie("token", token, tokenOption).status(200).json({
+    res.cookie("token", tokenGen, tokenOption).status(200).json({
       message: "Google login successful",
       data: tokenGen,
       success: true,
