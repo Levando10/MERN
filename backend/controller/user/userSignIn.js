@@ -54,7 +54,7 @@ async function userSignInController(req, res) {
 
       const tokenOption = {
         httpOnly: true,
-        secure: true,
+        secure: false,
         sameSite: "None",
       };
 
