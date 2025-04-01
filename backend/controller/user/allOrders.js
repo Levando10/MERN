@@ -1,6 +1,8 @@
 const orderModel = require("../../models/orders")
 
 async function allOrders(req, res) {
+    console.log("vao r");
+    
     try {
         const paidOrders = await orderModel.find({ status: 'Paid' });
 
