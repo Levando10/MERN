@@ -1,20 +1,20 @@
 const orderModel = require("../../models/orders")
 
-async function allOrders(req,res){
-    try{
-        const allOrders = await orderModel.find()
-        
+async function allOrders(req, res) {
+    try {
+        const paidOrders = await orderModel.find({ status: 'Paid' });
+
         res.json({
-            message : "All Orders ",
-            data : allOrders,
-            success : true,
-            error : false
+            message: "All Orders ",
+            data: allOrders,
+            success: true,
+            error: false
         })
-    }catch(err){
+    } catch (err) {
         res.status(400).json({
-            message : err.message || err,
-            error : true,
-            success : false
+            message: err.message || err,
+            error: true,
+            success: false
         })
     }
 }
