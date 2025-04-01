@@ -10,6 +10,7 @@ const changePassword = require("../controller/user/changePassword");
 const authToken = require("../middleware/authToken");
 const userLogout = require("../controller/user/userLogout");
 const allUsers = require("../controller/user/allUsers");
+const allOrders = require("../controller/user/allOrders");
 const updateUser = require("../controller/user/updateUser");
 const banUser = require("../controller/user/banUser");
 const verifyEmailController = require("../controller/user/verifyEmailController");
@@ -50,6 +51,7 @@ router.get("/user-details", authToken, userDetailsController);
 router.get("/userLogout", userLogout);
 
 //admin panel
+router.get("/all-orders", authToken, allOrders);
 router.get("/all-user", authToken, allUsers);
 router.post("/update-user", authToken, updateUser);
 router.post("/ban-user", authToken, banUser);
