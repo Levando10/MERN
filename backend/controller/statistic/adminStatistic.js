@@ -17,18 +17,13 @@ async function adminStatistics(req, res) {
 
       order.items.forEach((item) => {
         const productName = item.productId?.productName || "Unknown";
-
-        salesByMonth[month].totalSales += item.quantity;
-
-        if (!salesByMonth[month][productName]) {
-          salesByMonth[month][productName] = 0;
-        }
-        salesByMonth[month][productName] += item.quantity;
+        salesByMonth[month].totalSales += item.quantity * item.priceAtPurchase;
 
         if (!topProducts[productName]) {
           topProducts[productName] = { name: productName, sales: 0 };
         }
-        topProducts[productName].sales += item.quantity;
+
+        topProducts[productName].sales += item.quantity * item.priceAtPurchase
       });
     });
 
@@ -46,8 +41,8 @@ async function adminStatistics(req, res) {
       topProducts: topProductsArray,
     });
   } catch (error) {
-    console.error("Lỗi thống kê:", error);
-    res.status(500).json({ message: "Lỗi Server", error: true });
+    console.error("Err adminStatistics:", error);
+    res.status(500).json({ message: "Err Server", error: true });
   }
 };
 

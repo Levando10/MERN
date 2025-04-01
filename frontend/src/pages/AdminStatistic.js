@@ -18,15 +18,19 @@ const RevenueStatistics = () => {
     salesByMonth: [],
   });
   const [loading, setLoading] = useState(true);
-  const formattedData = [
-    chartData.topProducts.slice(0, 5).reduce(
-      (acc, product) => {
-        acc[product.name] = product.sales;
-        return acc;
-      },
-      { name: "Prodt" }
-    ),
-  ];
+
+  const formattedTopProductsData = chartData.topProducts.slice(0, 5).reduce(
+    (acc, product) => {
+      acc[product.name] = product.sales;
+      return acc;
+    },
+    { name: "Product" }
+  );
+
+  const formattedSalesByMonthData = chartData.salesByMonth.map(month => ({
+    month: month.date,
+    totalSales: month.totalSales,
+  }));
 
   const FIXED_COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#8dd1e1"];
 
@@ -52,10 +56,11 @@ const RevenueStatistics = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+      {/* Top Products Chart */}
       <div className="bg-white p-4 rounded-lg shadow">
         <h2 className="text-xl font-bold mb-2">Top 5 Best Selling Products</h2>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart width={500} height={300} data={formattedData}>
+          <BarChart width={500} height={300} data={[formattedTopProductsData]}>
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
@@ -72,32 +77,21 @@ const RevenueStatistics = () => {
         </ResponsiveContainer>
       </div>
 
+      {/* Sales by Month Chart */}
       <div className="bg-white p-4 rounded-lg shadow">
-        <h2 className="text-xl font-bold mb-2">Monthly sales statistics</h2>
+        <h2 className="text-xl font-bold mb-2">Sales by Month</h2>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData.salesByMonth}>
-            <XAxis dataKey="date" />
-            <YAxis domain={[0, "dataMax"]} />
+          <LineChart width={500} height={300} data={formattedSalesByMonthData}>
+            <XAxis dataKey="month" />
+            <YAxis />
             <Tooltip />
             <Legend />
             <Line
               type="monotone"
               dataKey="totalSales"
-              stroke="#FF0000"
-              strokeWidth={2}
+              stroke="#8884d8"
+              activeDot={{ r: 8 }}
             />
-            {chartData.salesByMonth.length > 0 &&
-              Object.keys(chartData.salesByMonth[0])
-                .filter((key) => key !== "date" && key !== "totalSales")
-                .map((key, index) => (
-                  <Line
-                    key={index}
-                    type="monotone"
-                    dataKey={key}
-                    stroke={FIXED_COLORS[index % FIXED_COLORS.length]}
-                    strokeWidth={2}
-                  />
-                ))}
           </LineChart>
         </ResponsiveContainer>
       </div>
