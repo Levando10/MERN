@@ -96,6 +96,7 @@ const AllUsers = () => {
             <th>Sr.</th>
             <th>Name</th>
             <th>Email</th>
+            <th>Address</th>
             <th>Role</th>
             <th>Created Date</th>
             <th>Action</th>
@@ -116,6 +117,7 @@ const AllUsers = () => {
                   )}
                 </td>
                 <td>{el?.email}</td>
+                <td>{el?.address || "N/A"}</td>
                 <td>{el?.role}</td>
                 <td>{moment(el?.createdAt).format("LL")}</td>
                 <td>

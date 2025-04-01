@@ -23,6 +23,7 @@ export default function Profile() {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
+    address: "",
     newPassword: "",
     confirmPassword: "",
   });
@@ -32,6 +33,7 @@ export default function Profile() {
       setFormData({
         name: user.name || "",
         phone: user.phone || "",
+        address: user.address || "",
       });
 
       const fetchOrderHistory = async () => {
@@ -51,6 +53,7 @@ export default function Profile() {
   const validateInput = () => {
     const PHONE_REGEX = /^[0-9]{10,11}$/;
     const trimmedName = formData.name?.trim().replace(/\s+/g, " ");
+    const trimmedAddress = formData.address?.trim().replace(/\s+/g, " ");
     const trimmedNewPassword = formData.newPassword
       ?.trim()
       .replace(/\s+/g, " ");
@@ -65,6 +68,15 @@ export default function Profile() {
       Swal.fire(
         "Error!",
         `Name is too long! Maximum allowed is ${50} characters.`,
+        "error"
+      );
+      return false;
+    }
+
+    if (trimmedAddress.length > 60) {
+      Swal.fire(
+        "Error!",
+        `Address is too long! Maximum allowed is ${60} characters.`,
         "error"
       );
       return false;
@@ -125,11 +137,13 @@ export default function Profile() {
     setFormData({
       name: trimmedName,
       phone: trimmedPhone,
+      address: trimmedAddress,
       newPassword: trimmedNewPassword ? trimmedNewPassword : "",
       confirmPassword: trimmedConfirmPassword ? trimmedConfirmPassword : "",
     });
     formData.name = trimmedName;
     formData.phone = trimmedPhone;
+    formData.address = trimmedAddress;
     formData.newPassword = trimmedNewPassword ? trimmedNewPassword : "";
     formData.confirmPassword = trimmedConfirmPassword
       ? trimmedConfirmPassword
@@ -146,7 +160,7 @@ export default function Profile() {
 
     uploadTask.on(
       "state_changed",
-      (snapshot) => {},
+      (snapshot) => { },
       (error) => {
         console.error("Upload failed:", error);
       },
@@ -199,6 +213,7 @@ export default function Profile() {
           userId: user._id,
           name: formData.name.trim().replace(/\s+/g, " "),
           phone: formData.phone.trim(),
+          address: formData.address.trim(),
           newPassword: formData.newPassword,
           confirmPassword: formData.confirmPassword,
         }),
@@ -229,8 +244,7 @@ export default function Profile() {
       .map(
         (item) => `
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
-          <img src="${
-            item.productId.productImage[0] || "/placeholder.jpg"
+          <img src="${item.productId.productImage[0] || "/placeholder.jpg"
           }" alt="${item.productId.productName}" 
             style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
           <div>
@@ -238,8 +252,8 @@ export default function Profile() {
             <p>Brand: ${item.productId.brandName}</p>
             <p>Category: ${item.productId.category}</p>
             <p>Price: <strong>${formatCurrency(
-              item.priceAtPurchase
-            )}</strong></p>
+            item.priceAtPurchase
+          )}</strong></p>
             <p>Quantity: <strong>${item.quantity}</strong></p>
           </div>
         </div>
@@ -253,8 +267,8 @@ export default function Profile() {
         <div style="text-align: left;">
           <p><strong>Order Date:</strong> ${formatDate(order.createdAt)}</p>
           <p><strong>Total Amount:</strong> ${formatCurrency(
-            order.totalAmount
-          )}</p>
+        order.totalAmount
+      )}</p>
           <p style="margin-bottom: 8px"><strong>Status:</strong> 
             <span style="color: ${order.status === "Paid" ? "green" : "red"};">
               ${order.status}
@@ -297,21 +311,19 @@ export default function Profile() {
         <h2 className="text-xl font-bold mb-6 text-gray-700">Account</h2>
         <ul className="space-y-4">
           <li
-            className={`flex items-center p-3 cursor-pointer rounded-lg transition duration-200 ${
-              selectedTab === "account"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-100 hover:bg-gray-200"
-            }`}
+            className={`flex items-center p-3 cursor-pointer rounded-lg transition duration-200 ${selectedTab === "account"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-100 hover:bg-gray-200"
+              }`}
             onClick={() => setSelectedTab("account")}
           >
             <FaUser className="mr-3" /> Account Management
           </li>
           <li
-            className={`flex items-center p-3 cursor-pointer rounded-lg transition duration-200 ${
-              selectedTab === "orders"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-100 hover:bg-gray-200"
-            }`}
+            className={`flex items-center p-3 cursor-pointer rounded-lg transition duration-200 ${selectedTab === "orders"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-100 hover:bg-gray-200"
+              }`}
             onClick={() => setSelectedTab("orders")}
           >
             <FaHistory className="mr-3" /> Order history
@@ -375,6 +387,14 @@ export default function Profile() {
                     className="border border-gray-300 p-3 w-full mb-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                     placeholder="Phone Number"
                   />
+                  <input
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    className="border border-gray-300 p-3 w-full mb-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    placeholder="Addres..."
+                  />
 
                   <div className="relative w-full mb-3">
                     <input
@@ -435,6 +455,9 @@ export default function Profile() {
                   <p className="text-lg mb-2">
                     <strong className="text-gray-700">Email:</strong>{" "}
                     {user.email}
+                  </p>
+                  <p className="text-lg mb-2">
+                    <strong className="text-gray-700">Address:</strong> {user.address || "N/A"}
                   </p>
                   <div
                     className="relative inline-block"
@@ -508,11 +531,10 @@ export default function Profile() {
                           {formatCurrency(order.totalAmount)}
                         </p>
                         <p
-                          className={`text-sm font-semibold ${
-                            order.status === "Paid"
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
+                          className={`text-sm font-semibold ${order.status === "Paid"
+                            ? "text-green-600"
+                            : "text-red-600"
+                            }`}
                         >
                           {order.status}
                         </p>
