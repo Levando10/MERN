@@ -3,13 +3,9 @@ const addToCartModel = require("../../models/cartProduct");
 
 const confirmPayment = async (req, res) => {
   try {
-    console.log("truoc khi log");
 
     const { status, address } = req.body;
     const userId = req.userId;
-    console.log("adddresss:   ", address);
-    console.log("newOrder:", userId);
-
 
     if (status === "UNPAID") {
       return res.status(200).json({
@@ -28,16 +24,19 @@ const confirmPayment = async (req, res) => {
         nameAtPurchase: item
       }));
 
+      
+      console.log("tro total");
+      
       const totalAmount = items.reduce(
         (total, item) => total + item.quantity * item.priceAtPurchase,
         0
       );
-      console.log("tôttotot");
+      console.log("totalAmount: " ,totalAmount);
 
       const newOrder = new orderModel({
         userId,
         items,
-        totalAmount,
+        totalAmount: totalAmount,
         status: "Paid",
         paymentMethod: "PayOS",
         shippingAddress: address ? address : "Hà Nội, Việt Nam",
