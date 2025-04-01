@@ -9,6 +9,8 @@ const payos = new PayOS(
 const createOrder = async (req, res) => {
   try {
     const { paymentMethod, userId, address } = req.body;
+    console.log("createOrder", address);
+    
     if (!address) {
       return res.status(400).json({ message: "Address empty!", success: false })
     }

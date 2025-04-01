@@ -5,6 +5,11 @@ const confirmPayment = async (req, res) => {
   try {
     const { status, address } = req.body;
     const userId = req.userId;
+    console.log(userId);
+    console.log(status);
+    console.log(address);
+    
+    
     if (status === "UNPAID") {
       return res.status(200).json({
         message: "Order was not paid and has been deleted!",
