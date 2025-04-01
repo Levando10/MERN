@@ -3,7 +3,7 @@ const addToCartModel = require("../../models/cartProduct");
 
 const confirmPayment = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, address } = req.body;
     const userId = req.userId;
     if (status === "UNPAID") {
       return res.status(200).json({
@@ -19,7 +19,7 @@ const confirmPayment = async (req, res) => {
       const items = cartItems.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
-        priceAtPurchase: item.price,
+        nameAtPurchase: item
       }));
 
       const totalAmount = items.reduce(
@@ -32,7 +32,7 @@ const confirmPayment = async (req, res) => {
         totalAmount,
         status: "Paid",
         paymentMethod: "PayOS",
-        shippingAddress: "Hà Nội, Việt Nam",
+        shippingAddress: address ? address : "Hà Nội, Việt Nam",
       });
 
       await newOrder.save();

@@ -10,6 +10,7 @@ const PaymentStatus = () => {
   const orderCode = searchParams.get("orderCode");
   const status = searchParams.get("status");
   const userId = searchParams.get("userId")
+  const address = searchParams.get("address")
   const { fetchUserAddToCart } = useContext(Context);
   useEffect(() => {
       const confirmPayment = async () => {
@@ -22,7 +23,8 @@ const PaymentStatus = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               status: status === "CANCELLED" ? "UNPAID" : "PAID",
-              userId
+              userId,
+              address
             }),
           });
 
