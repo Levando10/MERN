@@ -10,7 +10,6 @@ const PaymentStatus = () => {
   const orderCode = searchParams.get("orderCode");
   const status = searchParams.get("status");
   const address = searchParams.get("address");
-  console.log(address);
   
   const { fetchUserAddToCart } = useContext(Context);
   useEffect(() => {

@@ -35,9 +35,7 @@ const Allorders = () => {
         fetchAllorders();
     }, []);
 
-    const handleShowDetail = (order) => {
-        console.log(order);
-        
+    const handleShowDetail = (order) => {     
         const productListHtml = order.items
             .map(
                 (item) => `

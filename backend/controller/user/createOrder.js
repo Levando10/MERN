@@ -9,8 +9,6 @@ const payos = new PayOS(
 const createOrder = async (req, res) => {
   try {
     const { paymentMethod, userId, address } = req.body;
-    console.log("createOrder", address);
-    
     if (!address) {
       return res.status(400).json({ message: "Address empty!", success: false })
     }
@@ -36,8 +34,8 @@ const createOrder = async (req, res) => {
         const orderPayment = {
           amount: totalAmount,
           orderCode: new Date().getTime(),
-          returnUrl: `https://my-mern-shop.vercel.app/payment-success?userId=${userId}?address=${address}`,
-          cancelUrl: `https://my-mern-shop.vercel.app/payment-failed?userId=${userId}?address=${address}`,
+          returnUrl: `https://my-mern-shop.vercel.app/payment-success?userId=${userId}&address=${encodeURIComponent(address)}`,
+          cancelUrl: `https://my-mern-shop.vercel.app/payment-failed?userId=${userId}&address=${encodeURIComponent(address)}`,
           description: "Pay shopping bills",
         };
 
