@@ -1,5 +1,4 @@
 const Order = require("../../models/orders");
-const Product = require("../../models/productModel");
 
 async function adminStatistics(req, res) {
   try {
@@ -17,13 +16,14 @@ async function adminStatistics(req, res) {
 
       order.items.forEach((item) => {
         const productName = item.productId?.productName || "Unknown";
+
         salesByMonth[month].totalSales += item.quantity * item.priceAtPurchase;
 
         if (!topProducts[productName]) {
           topProducts[productName] = { name: productName, sales: 0 };
         }
 
-        topProducts[productName].sales += item.quantity * item.priceAtPurchase
+        topProducts[productName].sales += item.quantity;
       });
     });
 
@@ -34,7 +34,7 @@ async function adminStatistics(req, res) {
 
     const topProductsArray = Object.values(topProducts)
       .sort((a, b) => b.sales - a.sales)
-      .slice(0, 5); 
+      .slice(0, 5);
 
     res.json({
       salesByMonth: salesByMonthArray, 
