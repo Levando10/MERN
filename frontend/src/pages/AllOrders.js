@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import SummaryApi from "../common";
 import SweetAlert from "sweetalert";
+import { HiOutlineEye } from "react-icons/hi";
+import Swal from "sweetalert2";
 
 const Allorders = () => {
     const [allOrders, setAllorders] = useState([]);
@@ -32,6 +34,54 @@ const Allorders = () => {
     useEffect(() => {
         fetchAllorders();
     }, []);
+
+    const handleShowDetail = (order) => {
+        console.log(order);
+        
+        const productListHtml = order.items
+            .map(
+                (item) => `
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+              <img src="${item.productId.productImage[0] || "/placeholder.jpg"
+                    }" alt="${item.productId.productName}" 
+                style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+              <div>
+                <p><strong>${item.productId.productName}</strong></p>
+                <p>Brand: ${item.productId.brandName}</p>
+                <p>Category: ${item.productId.category}</p>
+                <p>Price: <strong>${formatCurrency(
+                        item.priceAtPurchase
+                    )}</strong></p>
+                <p>Quantity: <strong>${item.quantity}</strong></p>
+              </div>
+            </div>
+          `
+            )
+            .join("");
+
+        Swal.fire({
+            title: `Order Details`,
+            html: `
+            <div style="text-align: left;">
+              <p><strong>Order Date:</strong> ${formatDate(order.createdAt)}</p>
+              <p><strong>Total Amount:</strong> ${formatCurrency(
+                order.totalAmount
+            )}</p>
+              <p style="margin-bottom: 8px"><strong>Status:</strong> 
+                <span style="color: ${order.status === "Paid" ? "green" : "red"};">
+                  ${order.status}
+                </span>
+              </p>
+              <hr>
+              <hr>
+              <h3>Products in Order:</h3>
+              ${productListHtml}
+            </div>
+          `,
+            confirmButtonText: "Close",
+            confirmButtonColor: "#DC2626",
+        });
+    };
 
     const requestSort = (key) => {
         let direction = 'asc';
@@ -95,6 +145,7 @@ const Allorders = () => {
                         <th>
                             <button onClick={() => requestSort('shippingAddress')}>Shipping Address</button>
                         </th>
+                        <th>Detail</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -103,11 +154,17 @@ const Allorders = () => {
                             <tr key={order._id}>
                                 <td>{index + 1}</td>
                                 <td>{order.userId ? order.userId.name : 'N/A'}</td>
-                                <td>{formatCurrency(order.totalAmount)}</td>
+                                <td className="price-right">{formatCurrency(order.totalAmount)}</td>
                                 <td>{order.status}</td>
                                 <td>{formatDate(order.createdAt)}</td>
                                 <td>{order.paymentMethod || 'N/A'}</td>
                                 <td>{order.shippingAddress || 'N/A'}</td>
+                                <td><button
+                                    onClick={() => handleShowDetail(order)}
+                                    className="text-gray-600 hover:text-blue-500 transition"
+                                >
+                                    <HiOutlineEye size={22} />
+                                </button></td>
                             </tr>
                         );
                     })}
