@@ -21,17 +21,13 @@ const confirmPayment = async (req, res) => {
       const items = cartItems.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
-        nameAtPurchase: item
+        priceAtPurchase: item.price,
       }));
 
-      
-      console.log("tro total");
-      
       const totalAmount = items.reduce(
         (total, item) => total + item.quantity * item.priceAtPurchase,
         0
       );
-      console.log("totalAmount: " ,totalAmount);
 
       const newOrder = new orderModel({
         userId,
@@ -41,8 +37,6 @@ const confirmPayment = async (req, res) => {
         paymentMethod: "PayOS",
         shippingAddress: address ? address : "Hà Nội, Việt Nam",
       });
-      console.log(newOrder);
-
 
       await newOrder.save();
       await addToCartModel.deleteMany({ userId: userId });
