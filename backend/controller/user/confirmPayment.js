@@ -3,6 +3,8 @@ const addToCartModel = require("../../models/cartProduct");
 
 const confirmPayment = async (req, res) => {
   try {
+    console.log("truoc khi log");
+    
     const { status, address } = req.body;
     const userId = req.userId;
     console.log("adddresss:   ", address);

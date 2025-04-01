@@ -25,12 +25,13 @@ const PaymentStatus = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               status: status === "CANCELLED" ? "UNPAID" : "PAID",
-              address
+              address: address || "Hà Nội, Việt Nam"
             }),
           });
 
           const responseData = await response.json();
-
+          console.log("pass roi 2");
+          
           if (responseData.success) {
             Swal.fire({
               title:
