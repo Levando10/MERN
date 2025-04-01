@@ -9,7 +9,7 @@ const PaymentStatus = () => {
   const navigate = useNavigate();
   const orderCode = searchParams.get("orderCode");
   const status = searchParams.get("status");
-  const address = searchParams.get("address");
+  const address = decodeURIComponent(searchParams.get("address") || "");
   
   const { fetchUserAddToCart } = useContext(Context);
   useEffect(() => {
