@@ -25,7 +25,7 @@ async function verifyEmailController(req, res) {
                         text: 'The verification link is invalid or has already been used.',
                         confirmButtonText: 'Resend Verification Email'
                     }).then(() => {
-                        window.location.href = 'https://my-mern-shop.vercel.app/resend-verification';
+                        window.location.href = 'http://localhost:3000/resend-verification';
                     });
                 </script>
             </body>
@@ -55,7 +55,7 @@ async function verifyEmailController(req, res) {
                     text: 'Your email has been successfully verified. You can now log in.',
                     confirmButtonText: 'Go to Login'
                 }).then(() => {
-                    window.location.href = 'https://my-mern-shop.vercel.app/login';
+                    window.location.href = 'http://localhost:3000/login';
                 });
             </script>
         </body>
@@ -80,7 +80,7 @@ async function verifyEmailController(req, res) {
                     text: 'Something went wrong: ${err.message}',
                     confirmButtonText: 'Contact Support'
                 }).then(() => {
-                    window.location.href = 'https://my-mern-shop.vercel.app/contact-support';
+                    window.location.href = 'http://localhost:3000/contact-support';
                 });
             </script>
         </body>
