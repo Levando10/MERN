@@ -10,66 +10,63 @@ const PaymentStatus = () => {
   const orderCode = searchParams.get("orderCode");
   const status = searchParams.get("status");
   const address = decodeURIComponent(searchParams.get("address") || "");
-  console.log("FE address", address);
-  
-  
+
   const { fetchUserAddToCart } = useContext(Context);
   useEffect(() => {
-      const confirmPayment = async () => {
-        if (!orderCode) return;
+    const confirmPayment = async () => {
+      if (!orderCode) return;
 
-        try {
-          const response = await fetch(SummaryApi.confirmPayment.url, {
-            method: SummaryApi.confirmPayment.method,
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              status: status === "CANCELLED" ? "UNPAID" : "PAID",
-              address: address || "Hà Nội, Việt Nam"
-            }),
+      try {
+        const response = await fetch(SummaryApi.confirmPayment.url, {
+          method: SummaryApi.confirmPayment.method,
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            status: status === "CANCELLED" ? "UNPAID" : "PAID",
+            address: address || "Hà Nội, Việt Nam"
+          }),
+        });
+
+        const responseData = await response.json();
+
+        if (responseData.success) {
+          Swal.fire({
+            title:
+              status === "CANCELLED"
+                ? "Order Cancelled!"
+                : "Payment Successful!",
+            text:
+              status === "CANCELLED"
+                ? "Your order has been canceled because the payment was not completed."
+                : "Thank you for your purchase! Your order has been confirmed.",
+            icon: status === "CANCELLED" ? "warning" : "success",
+            timer: 6000,
+            showConfirmButton: false,
           });
 
-          const responseData = await response.json();
-          console.log("pass roi 2");
-          
-          if (responseData.success) {
-            Swal.fire({
-              title:
-                status === "CANCELLED"
-                  ? "Order Cancelled!"
-                  : "Payment Successful!",
-              text:
-                status === "CANCELLED"
-                  ? "Your order has been canceled because the payment was not completed."
-                  : "Thank you for your purchase! Your order has been confirmed.",
-              icon: status === "CANCELLED" ? "warning" : "success",
-              timer: 6000,
-              showConfirmButton: false,
-            });
-
-            fetchUserAddToCart();
-            setTimeout(() => {
-              navigate("/");
-            }, 400);
-          } else {
-            Swal.fire({
-              title: "Payment Failed!",
-              text:
-                responseData.message ||
-                "We couldn't process your payment. Please try again or contact support.",
-              icon: "error",
-            });
-          }
-        } catch (error) {
+          fetchUserAddToCart();
+          setTimeout(() => {
+            navigate("/");
+          }, 400);
+        } else {
           Swal.fire({
-            title: "Error Occurred",
-            text: "Something went wrong while confirming your payment. Please try again later.",
+            title: "Payment Failed!",
+            text:
+              responseData.message ||
+              "We couldn't process your payment. Please try again or contact support.",
             icon: "error",
           });
         }
-      };
-      confirmPayment();
-    
+      } catch (error) {
+        Swal.fire({
+          title: "Error Occurred",
+          text: "Something went wrong while confirming your payment. Please try again later.",
+          icon: "error",
+        });
+      }
+    };
+    confirmPayment();
+
   }, [orderCode, navigate]);
 
   return null;
