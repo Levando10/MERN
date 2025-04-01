@@ -10,7 +10,8 @@ const PaymentHistory = async (req, res) => {
 
     const orders = await orderModel
       .find({ userId, status: "Paid" })
-      .populate("items.productId");
+      .populate("items.productId")
+      .sort({ createdAt: -1 });
     if (!orders.length) {
       return res.json({
         message: "No order history found!",
