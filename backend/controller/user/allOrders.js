@@ -4,7 +4,10 @@ async function allOrders(req, res) {
     console.log("vao r");
 
     try {
-        const paidOrders = await orderModel.find({ status: 'Paid' }).populate('userId').populate('items.productId');;
+        const paidOrders = await orderModel.find({ status: 'Paid' })
+        .populate('userId')
+        .populate('items.productId')
+        .sort({ createdAt: -1 });
 
         res.json({
             message: "All Orders ",
