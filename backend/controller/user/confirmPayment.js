@@ -6,7 +6,6 @@ const confirmPayment = async (req, res) => {
     const { status, address } = req.body;
     const userId = req.userId;
     console.log(userId);
-    console.log(status);
     console.log(address);
     
     
