@@ -7,6 +7,7 @@ import SignUp from '../pages/SignUp'
 import AdminPanel from '../pages/AdminPanel'
 import AllUsers from '../pages/AllUsers'
 import AllProducts from '../pages/AllProducts'
+import Allorders from '../pages/AllOrders'
 import CategoryProduct from '../pages/CategoryProduct'
 import ProductDetails from '../pages/ProductDetails'
 import Cart from '../pages/Cart'
@@ -72,7 +73,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path : "all-orders",
-                        element : <AllProducts/>
+                        element : <Allorders/>
                     },
                     {
                         path : "all-products",
