@@ -18,8 +18,6 @@ const Allorders = () => {
         const dataResponse = await fetchData.json();
         if (dataResponse.success) {
             setAllorders(dataResponse.data);
-            console.log(dataResponse.data[0]);
-
         }
 
         if (dataResponse.error) {
@@ -100,7 +98,7 @@ const Allorders = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {allOrders.map((order, index) => {
+                    {sortedOrders.map((order, index) => {
                         return (
                             <tr key={order._id}>
                                 <td>{index + 1}</td>
