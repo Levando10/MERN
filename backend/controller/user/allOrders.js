@@ -6,7 +6,7 @@ async function allOrders(req, res) {
 
         res.json({
             message: "All Orders ",
-            data: allOrders,
+            data: paidOrders,
             success: true,
             error: false
         })
