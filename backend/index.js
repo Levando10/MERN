@@ -9,14 +9,14 @@ const app = express();
 
 app.use(
   cors({
-    // origin: [
-    //   process.env.FRONTEND_URL || "https://localhost:3000",
-    //   "https://my-mern-shop.vercel.app",
-    // ],
-
     origin: [
-    "http://localhost:3000"
+      process.env.FRONTEND_URL || "https://localhost:3000",
+      "https://my-mern-shop.vercel.app",
     ],
+
+    // origin: [
+    // "http://localhost:3000"
+    // ],
 
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -36,8 +36,8 @@ app.use(cookieParser());
 
 app.use("/api", router);
 
-// const PORT = process.env.PORT || 8080;
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
+// const PORT = 8080;
 
 
 connectDB()

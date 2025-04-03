@@ -1,5 +1,5 @@
-// const backendDomin = "https://mern-v6c4.onrender.com";
-const backendDomin = "http://localhost:8080";
+const backendDomin = "https://mern-v6c4.onrender.com";
+// const backendDomin = "http://localhost:8080";
 
 const SummaryApi = {
     signUP: {
