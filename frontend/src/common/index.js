@@ -14,6 +14,10 @@ const SummaryApi = {
         url: `${backendDomin}/api/googleLogin`,
         method: "post"
     },
+    addReview: {
+        url: `${backendDomin}/api/create-review`,
+        method: "post"
+    },
     forgotPassword: {
         url: `${backendDomin}/api/forgot-password`,
         method: "post"

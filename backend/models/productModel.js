@@ -7,7 +7,13 @@ const productSchema = mongoose.Schema({
     productImage : [],
     description : String,
     price : Number,
-    sellingPrice : Number
+    sellingPrice : Number,
+    reviews: [
+      {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'review'
+      }
+  ]
 },{
     timestamps : true
 })
