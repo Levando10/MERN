@@ -36,6 +36,7 @@ const Header = () => {
         "You have been logged out. See you next time!",
         "success"
       );
+      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/"; 
       setTimeout(() => {
         dispatch(setUserDetails(null));
         navigate("/");
@@ -57,6 +58,7 @@ const Header = () => {
       navigate("/search");
     }
   };
+  
   return (
     <header className="h-16 shadow-md bg-white fixed w-full z-40">
       <div className=" h-full container mx-auto flex items-center px-4 justify-between">
@@ -66,7 +68,7 @@ const Header = () => {
           </Link>
         </div>
 
-        <div className="hidden lg:flex items-center w-full justify-between max-w-sm border rounded-full focus-within:shadow pl-2">
+        {user?.role === "ADMIN" ? "" : (<div className="hidden lg:flex items-center w-full justify-between max-w-sm border rounded-full focus-within:shadow pl-2">
           <input
             type="text"
             placeholder="search product here..."
@@ -77,7 +79,7 @@ const Header = () => {
           <div className="text-lg min-w-[50px] h-8 bg-red-600 flex items-center justify-center rounded-r-full text-white">
             <GrSearch />
           </div>
-        </div>
+        </div>)}
 
         <div className="flex items-center gap-7">
           <div

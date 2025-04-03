@@ -1,121 +1,130 @@
 const backendDomin = "https://mern-v6c4.onrender.com";
+// const backendDomin = "http://localhost:8080";
 
 const SummaryApi = {
-    signUP : {
-        url : `${backendDomin}/api/signup`,
-        method : "post"
+    signUP: {
+        url: `${backendDomin}/api/signup`,
+        method: "post"
     },
-    signIn : {
-        url : `${backendDomin}/api/signin`,
-        method : "post"
+    signIn: {
+        url: `${backendDomin}/api/signin`,
+        method: "post"
     },
-    googleLogin : {
-        url : `${backendDomin}/api/googleLogin`,
-        method : "post"
+    googleLogin: {
+        url: `${backendDomin}/api/googleLogin`,
+        method: "post"
     },
-    forgotPassword : {
-        url : `${backendDomin}/api/forgot-password`,
-        method : "post"
+    addReview: {
+        url: `${backendDomin}/api/create-review`,
+        method: "post"
     },
-    current_user : {
-        url : `${backendDomin}/api/user-details`,
-        method : "get"
+    forgotPassword: {
+        url: `${backendDomin}/api/forgot-password`,
+        method: "post"
     },
-    logout_user : {
-        url : `${backendDomin}/api/userLogout`,
-        method : 'get'
+    current_user: {
+        url: `${backendDomin}/api/user-details`,
+        method: "get"
     },
-    createOrder : {
-        url : `${backendDomin}/api/create-order`,
-        method : "post"
+    logout_user: {
+        url: `${backendDomin}/api/userLogout`,
+        method: 'get'
     },
-    confirmPayment : {
-        url : `${backendDomin}/api/confirm-payment`,
-        method : "post"
+    createOrder: {
+        url: `${backendDomin}/api/create-order`,
+        method: "post"
     },
-    historyPayment : {
-        url : `${backendDomin}/api/history-payment`,
-        method : 'get'
+    confirmPayment: {
+        url: `${backendDomin}/api/confirm-payment`,
+        method: "post"
     },
-    allUser : {
-        url : `${backendDomin}/api/all-user`,
-        method : 'get'
+    historyPayment: {
+        url: `${backendDomin}/api/history-payment`,
+        method: 'get'
     },
-    allOrders : {
-        url : `${backendDomin}/api/all-orders`,
-        method : 'get'
+    allUser: {
+        url: `${backendDomin}/api/all-user`,
+        method: 'get'
     },
-    updateUser : {
-        url : `${backendDomin}/api/update-user`,
-        method : "post"
+    updateDeliveryStatus: {
+        url: `${backendDomin}/api/update-delivery-status`,
+        method: 'post'
     },
-    updateAvatar : {
-        url : `${backendDomin}/api/update-avatar`,
-        method : "post"
+    allOrders: {
+        url: `${backendDomin}/api/all-orders`,
+        method: 'get'
     },
-    updateProfile : {
-        url : `${backendDomin}/api/update-profile`,
-        method : "post"
+    updateUser: {
+        url: `${backendDomin}/api/update-user`,
+        method: "post"
     },
-    banUser : {
-        url : `${backendDomin}/api/ban-user`,
-        method : "post"
+    updateAvatar: {
+        url: `${backendDomin}/api/update-avatar`,
+        method: "post"
     },
-    uploadProduct : {
-        url : `${backendDomin}/api/upload-product`,
-        method : 'post'
+    updateProfile: {
+        url: `${backendDomin}/api/update-profile`,
+        method: "post"
     },
-    allProduct : {
-        url : `${backendDomin}/api/get-product`,
-        method : 'get'
+    banUser: {
+        url: `${backendDomin}/api/ban-user`,
+        method: "post"
     },
-    updateProduct : {
-        url : `${backendDomin}/api/update-product`,
-        method  : 'post'
+    uploadProduct: {
+        url: `${backendDomin}/api/upload-product`,
+        method: 'post'
     },
-    categoryProduct : {
-        url : `${backendDomin}/api/get-categoryProduct`,
-        method : 'get'
+    allProduct: {
+        url: `${backendDomin}/api/get-product`,
+        method: 'get'
     },
-    categoryWiseProduct : {
-        url : `${backendDomin}/api/category-product`,
-        method : 'post'
+    updateProduct: {
+        url: `${backendDomin}/api/update-product`,
+        method: 'post'
     },
-    productDetails : {
-        url : `${backendDomin}/api/product-details`,
-        method : 'post'
+    categoryProduct: {
+        url: `${backendDomin}/api/get-categoryProduct`,
+        method: 'get'
     },
-    addToCartProduct : {
-        url : `${backendDomin}/api/addtocart`,
-        method : 'post'
+    categoryWiseProduct: {
+        url: `${backendDomin}/api/category-product`,
+        method: 'post'
     },
-    addToCartProductCount : {
-        url : `${backendDomin}/api/countAddToCartProduct`,
-        method : 'get'
+    productDetails: {
+        url: `${backendDomin}/api/product-details`,
+        method: 'post'
     },
-    addToCartProductView : {
-        url : `${backendDomin}/api/view-card-product`,
-        method : 'get'
+    addToCartProduct: {
+        url: `${backendDomin}/api/addtocart`,
+        method: 'post'
     },
-    updateCartProduct : {
-        url : `${backendDomin}/api/update-cart-product`,
-        method : 'post'
+    addToCartProductCount: {
+        url: `${backendDomin}/api/countAddToCartProduct`,
+        method: 'get'
     },
-    deleteCartProduct : {
-        url : `${backendDomin}/api/delete-cart-product`,
-        method : 'post'
+    addToCartProductView: {
+        url: `${backendDomin}/api/view-card-product`,
+        method: 'get'
     },
-    searchProduct : {
-        url : `${backendDomin}/api/search`,
-        method : 'get'
+    updateCartProduct: {
+        url: `${backendDomin}/api/update-cart-product`,
+        method: 'post'
     },
-    filterProduct : {
-        url : `${backendDomin}/api/filter-product`,
-        method : 'post'
+    deleteCartProduct: {
+        url: `${backendDomin}/api/delete-cart-product`,
+        method: 'post'
     },
-    revenueStatistics : {
-        url : `${backendDomin}/api/revenue-statistic`,
-        method : 'get'
+    searchProduct: {
+        url: `${backendDomin}/api/search`,
+        method: 'get'
+    },
+    filterProduct: {
+        url: `${backendDomin}/api/filter-product`,
+        method: 'post'
+    },
+    revenueStatistics: {
+        url: `${backendDomin}/api/revenue-statistic`,
+        method: 'get'
     }
 }
 

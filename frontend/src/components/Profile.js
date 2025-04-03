@@ -20,6 +20,9 @@ export default function Profile() {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -49,6 +52,16 @@ export default function Profile() {
       fetchOrderHistory();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (startDate && endDate) {
+      if (startDate > endDate) {
+        setErrorMessage("Start date must be before end date.");
+      } else {
+        setErrorMessage("");
+      }
+    }
+  }, [startDate, endDate]);
 
   const validateInput = () => {
     const PHONE_REGEX = /^[0-9]{10,11}$/;
@@ -152,6 +165,36 @@ export default function Profile() {
     return true;
   };
 
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+  };
+
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  };
+
+  const filteredOrders = historyPayment.filter((order) => {
+    const orderDate = new Date(order.createdAt).setHours(0, 0, 0, 0);
+    const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null;
+    const end = endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null;
+
+    if (start && end) {
+      return orderDate >= start && orderDate <= end;
+    }
+    if (start) {
+      return orderDate >= start;
+    }
+    if (end) {
+      return orderDate <= end;
+    }
+
+    return true;
+  });
+
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -160,7 +203,7 @@ export default function Profile() {
 
     uploadTask.on(
       "state_changed",
-      (snapshot) => { },
+      (snapshot) => {},
       (error) => {
         console.error("Upload failed:", error);
       },
@@ -240,61 +283,178 @@ export default function Profile() {
   };
 
   const handleShowDetail = (order) => {
+    const isDelivered = order.statusDelivery === "Delivered";
     const productListHtml = order.items
       .map(
-        (item) => `
+        (item, index) => `
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
-          <img src="${item.productId.productImage[0] || "/placeholder.jpg"
-          }" alt="${item.productId.productName}" 
-            style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
-          <div>
-            <p><strong>${item.productId.productName}</strong></p>
-            <p>Brand: ${item.productId.brandName}</p>
-            <p>Category: ${item.productId.category}</p>
-            <p>Price: <strong>${formatCurrency(
-            item.priceAtPurchase
-          )}</strong></p>
-            <p>Quantity: <strong>${item.quantity}</strong></p>
-          </div>
+            <img src="${item.productId.productImage[0] || "/placeholder.jpg"}" 
+                 alt="${item.productId.productName}" 
+                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+            <div>
+                <p><strong>${item.productId.productName}</strong></p>
+                <p>Brand: ${item.productId.brandName}</p>
+                <p>Category: ${item.productId.category}</p>
+                <p>Price: <strong>${formatCurrency(
+                  item.priceAtPurchase
+                )}</strong></p>
+                <p>Quantity: <strong>${item.quantity}</strong></p>
+  
+                ${
+                  isDelivered
+                    ? `
+                <div>
+                  <label for="rating-${index}">Rating (1-5):</label>
+                  <input
+                      type="number"
+                      id="rating-${index}"
+                      name="rating-${index}"
+                      min="1"
+                      max="5"
+                      step="1"
+                      oninput="this.value = Math.min(5, Math.max(1, this.value))"
+                      style="width: 50px;"
+                      value="${item.rating || 5}"
+                  />
+                </div>
+  
+                <div>
+                  <label for="review-${index}">Review:</label>
+                  <textarea
+                      id="review-${index}"
+                      name="review-${index}"
+                      placeholder="Write your review here"
+                      style="width: 100%; min-height: 60px;max-height: 60px;resize: unset;min-width: 310px;"
+                  >${
+                    item.review ||
+                    "Good product for the price I am very satisfied with it. Next time I will buy the product again."
+                  }</textarea>
+                </div>
+                `
+                    : ""
+                }
+            </div>
         </div>
-      `
+    `
       )
       .join("");
+
+    let deliveryStatusColor = "";
+    if (order.statusDelivery === "Pending") {
+      deliveryStatusColor = "#854D0E";
+    } else if (order.statusDelivery === "Shipped") {
+      deliveryStatusColor = "#1E40AF";
+    } else if (order.statusDelivery === "Delivered") {
+      deliveryStatusColor = "#66534";
+    }
+
+    let deliveryStatusBack = "";
+    if (order.statusDelivery === "Pending") {
+      deliveryStatusBack = "#FEF08A";
+    } else if (order.statusDelivery === "Shipped") {
+      deliveryStatusBack = "#BFDBFE";
+    } else if (order.statusDelivery === "Delivered") {
+      deliveryStatusBack = "#BBF7D0";
+    }
 
     Swal.fire({
       title: `Order Details`,
       html: `
         <div style="text-align: left;">
-          <p><strong>Order Date:</strong> ${formatDate(order.createdAt)}</p>
-          <p><strong>Total Amount:</strong> ${formatCurrency(
-        order.totalAmount
-      )}</p>
-          <p style="margin-bottom: 8px"><strong>Status:</strong> 
-            <span style="color: ${order.status === "Paid" ? "green" : "red"};">
-              ${order.status}
-            </span>
-          </p>
-          <hr>
-          <hr>
-          <h3>Products in Order:</h3>
-          ${productListHtml}
+            <p><strong>Order Date:</strong> ${formatDate(order.createdAt)}</p>
+            <p><strong>Total Amount:</strong> ${formatCurrency(
+              order.totalAmount
+            )}</p>
+            <p style="margin-bottom: 4px"><strong>Status:</strong> 
+                <span style="color: ${
+                  order.status === "Paid" ? "green" : "red"
+                };">
+                    ${order.status}
+                </span>
+            </p>
+            <hr>
+            <p style="margin-bottom: 8px;padding: 8px 0"><strong>Status Delivery:</strong> 
+                <span style="color: ${deliveryStatusColor}; background-color: ${deliveryStatusBack}" class="px-2 py-1 rounded">
+                    ${order.statusDelivery}
+                </span>
+            </p>
+            <hr>
+            <h3>Products in Order:</h3>
+            ${productListHtml}
         </div>
       `,
-      confirmButtonText: "Close",
-      confirmButtonColor: "#DC2626",
+      confirmButtonText: "Save Review",
+      confirmButtonColor: "#4CAF50",
+      showConfirmButton: isDelivered,
+      cancelButtonText: "Close",
+      showCancelButton: true,
+      cancelButtonColor: "#DC2626",
+      preConfirm: () => {
+        if (isDelivered) {
+          const updatedItems = order.items.map((item, index) => {
+            const rating = document.getElementById(`rating-${index}`).value;
+            const review = document.getElementById(`review-${index}`).value;                
+            return {
+              ...item,
+              isReviewed: true,
+              rating: parseInt(rating),
+              review,
+            };
+          });     
+          saveReview(order._id, updatedItems);
+        }
+      },
     });
   };
 
-  const formatDate = (isoString) => {
-    const date = new Date(isoString);
-    return date.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+  const saveReview = async (orderId, updatedItems) => {     
+    try {
+      const response = await fetch(SummaryApi.addReview.url, {
+        method: SummaryApi.addReview.method,
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId,
+          updatedItems,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        Swal.fire({
+          title: "Success!",
+          text: "Your review has been saved.",
+          icon: "success",
+          confirmButtonText: "Close",
+          confirmButtonColor: "#DC2626",
+        });
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: "There was an error saving your review.",
+          icon: "error",
+          confirmButtonText: "Close",
+          confirmButtonColor: "#DC2626",
+        });
+      }
+    } catch (error) {
+      console.error("Error saving review:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "An unexpected error occurred.",
+        icon: "error",
+        confirmButtonText: "Close",
+        confirmButtonColor: "#DC2626",
+      });
+    }
   };
 
-  const formatCurrency = (amount) => {
-    return amount.toLocaleString("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    });
+  const statusColors = {
+    Pending: "bg-yellow-200 text-yellow-800",
+    Shipped: "bg-blue-200 text-blue-800",
+    Delivered: "bg-green-200 text-green-800",
   };
 
   if (!user) {
@@ -311,19 +471,21 @@ export default function Profile() {
         <h2 className="text-xl font-bold mb-6 text-gray-700">Account</h2>
         <ul className="space-y-4">
           <li
-            className={`flex items-center p-3 cursor-pointer rounded-lg transition duration-200 ${selectedTab === "account"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-100 hover:bg-gray-200"
-              }`}
+            className={`flex items-center p-3 cursor-pointer rounded-lg transition duration-200 ${
+              selectedTab === "account"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-100 hover:bg-gray-200"
+            }`}
             onClick={() => setSelectedTab("account")}
           >
             <FaUser className="mr-3" /> Account Management
           </li>
           <li
-            className={`flex items-center p-3 cursor-pointer rounded-lg transition duration-200 ${selectedTab === "orders"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-100 hover:bg-gray-200"
-              }`}
+            className={`flex items-center p-3 cursor-pointer rounded-lg transition duration-200 ${
+              selectedTab === "orders"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-100 hover:bg-gray-200"
+            }`}
             onClick={() => setSelectedTab("orders")}
           >
             <FaHistory className="mr-3" /> Order history
@@ -457,7 +619,8 @@ export default function Profile() {
                     {user.email}
                   </p>
                   <p className="text-lg mb-2">
-                    <strong className="text-gray-700">Address:</strong> {user.address || "N/A"}
+                    <strong className="text-gray-700">Address:</strong>{" "}
+                    {user.address || "N/A"}
                   </p>
                   <div
                     className="relative inline-block"
@@ -496,12 +659,42 @@ export default function Profile() {
               Order history
             </h1>
 
-            {historyPayment && historyPayment.length ? (
+            <div className="flex gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Start Date:
+                </label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  End Date:
+                </label>
+                <input
+                  type="date"
+                  value={endDate}
+                  min={startDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  disabled={!startDate}
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+            </div>
+            {errorMessage && (
+              <p className="text-red-500 text-sm">{errorMessage}</p>
+            )}
+
+            {filteredOrders && filteredOrders.length ? (
               <div
                 className="space-y-4"
                 style={{ overflow: "auto", maxHeight: "490px" }}
               >
-                {historyPayment.map((order, index) => (
+                {filteredOrders.map((order, index) => (
                   <div
                     key={index}
                     className="p-4 border rounded-lg shadow-sm bg-gray-50"
@@ -531,12 +724,21 @@ export default function Profile() {
                           {formatCurrency(order.totalAmount)}
                         </p>
                         <p
-                          className={`text-sm font-semibold ${order.status === "Paid"
-                            ? "text-green-600"
-                            : "text-red-600"
-                            }`}
+                          className={`text-sm font-semibold ${
+                            order.status === "Paid"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
                         >
                           {order.status}
+                        </p>
+                        <p
+                          style={{ maxWidth: "85px", display: "inline-block" }}
+                          className={`px-2 py-1 rounded ${
+                            statusColors[order.statusDelivery]
+                          }`}
+                        >
+                          {order.statusDelivery}
                         </p>
                       </div>
                     </div>

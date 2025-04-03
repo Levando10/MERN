@@ -11,6 +11,7 @@ const authToken = require("../middleware/authToken");
 const userLogout = require("../controller/user/userLogout");
 const allUsers = require("../controller/user/allUsers");
 const allOrders = require("../controller/user/allOrders");
+const updateDeliveryStatus = require("../controller/user/updateDeliveryStatus");
 const updateUser = require("../controller/user/updateUser");
 const banUser = require("../controller/user/banUser");
 const verifyEmailController = require("../controller/user/verifyEmailController");
@@ -32,11 +33,13 @@ const updateAddToCartProduct = require("../controller/user/updateAddToCartProduc
 const deleteAddToCartProduct = require("../controller/user/deleteAddToCartProduct");
 const searchProduct = require("../controller/product/searchProduct");
 const filterProductController = require("../controller/product/filterProduct");
+const addReview = require("../controller/user/review/addReview");
 const adminStatistics = require("../controller/statistic/adminStatistic");
 
 // Payment
 router.post("/create-order", authToken, createOrder);
 router.post("/confirm-payment", authToken, confirmPayment);
+router.post("/update-delivery-status", authToken, updateDeliveryStatus);
 
 // Account
 router.post("/signup", userSignUpController);
@@ -48,6 +51,7 @@ router.get("/history-payment", authToken, PaymentHistory);
 router.post("/update-avatar", authToken, updateAvatar);
 router.post("/update-profile", authToken, updateProfile);
 router.get("/user-details", authToken, userDetailsController);
+router.post('/create-review',authToken, addReview);
 router.get("/userLogout", userLogout);
 
 //admin panel
