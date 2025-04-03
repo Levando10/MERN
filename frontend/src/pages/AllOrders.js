@@ -3,6 +3,7 @@ import SummaryApi from "../common";
 import SweetAlert from "sweetalert";
 import { HiOutlineEye } from "react-icons/hi";
 import Swal from "sweetalert2";
+import { FaEdit } from "react-icons/fa";
 
 const Allorders = () => {
     const [allOrders, setAllorders] = useState([]);
@@ -35,7 +36,7 @@ const Allorders = () => {
         fetchAllorders();
     }, []);
 
-    const handleShowDetail = (order) => {     
+    const handleShowDetail = (order) => {
         const productListHtml = order.items
             .map(
                 (item) => `
@@ -105,6 +106,57 @@ const Allorders = () => {
         return sortedData;
     }, [allOrders, sortConfig]);
 
+    const updateOrderStatus = async (orderId, currentStatus) => {
+        const { value: newStatus } = await Swal.fire({
+            title: "Update Order Status",
+            input: "select",
+            inputOptions: {
+                Pending: "⏳ Pending",
+                Shipped: "🚛 Shipped",
+                Delivered: "✅ Delivered",
+            },
+            inputPlaceholder: "Select a status",
+            showCancelButton: true,
+            inputValue: currentStatus,
+            confirmButtonText: "Confirm",
+            cancelButtonText: "Cancel",
+            customClass: {
+                confirmButton: "bg-green-500 text-white px-4 py-2 rounded",
+                cancelButton: "bg-red-500 text-white px-4 py-2 rounded",
+                popup: "shadow-lg",
+            },
+        });
+
+        if (newStatus) {
+            try {
+                const response = await fetch(SummaryApi.updateDeliveryStatus.url, {
+                    method: SummaryApi.updateDeliveryStatus.method,
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ orderId, statusDelivery: newStatus }),
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    Swal.fire("Success!", "Order status updated.", "success");
+                    fetchAllorders();
+                } else {
+                    Swal.fire("Error!", "Failed to update status.", "error");
+                }
+            } catch (error) {
+                Swal.fire("Error!", "Something went wrong.", "error");
+            }
+        }
+    };
+
+    const statusColors = {
+        Pending: "bg-yellow-200 text-yellow-800",
+        Shipped: "bg-blue-200 text-blue-800",
+        Delivered: "bg-green-200 text-green-800",
+    };
+
     const formatDate = (isoString) => {
         const date = new Date(isoString);
         return date.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
@@ -119,6 +171,7 @@ const Allorders = () => {
 
     return (
         <div className="bg-white pb-4">
+            <h2 style={{ padding: "4px" }} className='font-bold text-lg'>All Order</h2>
             <table className="w-full userTable">
                 <thead>
                     <tr className="bg-black text-white">
@@ -143,6 +196,9 @@ const Allorders = () => {
                         <th>
                             <button onClick={() => requestSort('shippingAddress')}>Shipping Address</button>
                         </th>
+                        <th>
+                            <button onClick={() => requestSort('statusDelivery')}>Update Delivery</button>
+                        </th>
                         <th>Detail</th>
                     </tr>
                 </thead>
@@ -157,6 +213,16 @@ const Allorders = () => {
                                 <td>{formatDate(order.createdAt)}</td>
                                 <td>{order.paymentMethod || 'N/A'}</td>
                                 <td>{order.shippingAddress || 'N/A'}</td>
+                                <td className="flex justify-between gap-2 items-center">
+                                    <span style={{minWidth:"85px"}} className={`px-2 py-1 rounded ${statusColors[order.statusDelivery]}`}>
+                                        {order.statusDelivery}
+                                    </span>
+                                    <FaEdit
+                                        onClick={() => updateOrderStatus(order._id, order.statusDelivery)}
+                                        size={16}
+                                        className="text-gray-600 cursor-pointer hover:text-blue-500 transition"
+                                    />
+                                </td>
                                 <td><button
                                     onClick={() => handleShowDetail(order)}
                                     className="text-gray-600 hover:text-blue-500 transition"

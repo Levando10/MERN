@@ -244,45 +244,70 @@ export default function Profile() {
       .map(
         (item) => `
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
-          <img src="${item.productId.productImage[0] || "/placeholder.jpg"
-          }" alt="${item.productId.productName}" 
-            style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
-          <div>
-            <p><strong>${item.productId.productName}</strong></p>
-            <p>Brand: ${item.productId.brandName}</p>
-            <p>Category: ${item.productId.category}</p>
-            <p>Price: <strong>${formatCurrency(
-            item.priceAtPurchase
-          )}</strong></p>
-            <p>Quantity: <strong>${item.quantity}</strong></p>
-          </div>
+            <img src="${item.productId.productImage[0] || "/placeholder.jpg"}" 
+                 alt="${item.productId.productName}" 
+                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+            <div>
+                <p><strong>${item.productId.productName}</strong></p>
+                <p>Brand: ${item.productId.brandName}</p>
+                <p>Category: ${item.productId.category}</p>
+                <p>Price: <strong>${formatCurrency(item.priceAtPurchase)}</strong></p>
+                <p>Quantity: <strong>${item.quantity}</strong></p>
+            </div>
         </div>
-      `
-      )
-      .join("");
+    `).join("");
+
+
+    let deliveryStatusColor = '';
+    if (order.statusDelivery === 'Pending') {
+      deliveryStatusColor = '#854D0E';
+    } else if (order.statusDelivery === 'Shipped') {
+      deliveryStatusColor = '#1E40AF';
+    } else if (order.statusDelivery === 'Delivered') {
+      deliveryStatusColor = '#66534';
+    }
+
+    let deliveryStatusBack = '';
+    if (order.statusDelivery === 'Pending') {
+      deliveryStatusBack = '#FEF08A';
+    } else if (order.statusDelivery === 'Shipped') {
+      deliveryStatusBack = '#BFDBFE';
+    } else if (order.statusDelivery === 'Delivered') {
+      deliveryStatusBack = '#BBF7D0';
+    }
 
     Swal.fire({
       title: `Order Details`,
       html: `
         <div style="text-align: left;">
-          <p><strong>Order Date:</strong> ${formatDate(order.createdAt)}</p>
-          <p><strong>Total Amount:</strong> ${formatCurrency(
-        order.totalAmount
-      )}</p>
-          <p style="margin-bottom: 8px"><strong>Status:</strong> 
-            <span style="color: ${order.status === "Paid" ? "green" : "red"};">
-              ${order.status}
-            </span>
-          </p>
-          <hr>
-          <hr>
-          <h3>Products in Order:</h3>
-          ${productListHtml}
+            <p><strong>Order Date:</strong> ${formatDate(order.createdAt)}</p>
+            <p><strong>Total Amount:</strong> ${formatCurrency(order.totalAmount)}</p>
+            <p style="margin-bottom: 4px"><strong>Status:</strong> 
+                <span style="color: ${order.status === "Paid" ? "green" : "red"};">
+                    ${order.status}
+                </span>
+            </p>
+            <hr>
+            <p style="margin-bottom: 8px;padding: 8px 0"><strong>Status Delivery:</strong> 
+                <span style="color: ${deliveryStatusColor};     background-color: ${deliveryStatusBack}" class="px-2 py-1 rounded">
+                    ${order.statusDelivery}
+                </span>
+            </p>
+            <hr>
+            <h3>Products in Order:</h3>
+            ${productListHtml}
         </div>
-      `,
+        `,
       confirmButtonText: "Close",
       confirmButtonColor: "#DC2626",
     });
+  };
+
+
+  const statusColors = {
+    Pending: "bg-yellow-200 text-yellow-800",
+    Shipped: "bg-blue-200 text-blue-800",
+    Delivered: "bg-green-200 text-green-800",
   };
 
   const formatDate = (isoString) => {
@@ -537,6 +562,9 @@ export default function Profile() {
                             }`}
                         >
                           {order.status}
+                        </p>
+                        <p style={{ maxWidth: "85px", display: "inline-block" }} className={`px-2 py-1 rounded ${statusColors[order.statusDelivery]}`}>
+                          {order.statusDelivery}
                         </p>
                       </div>
                     </div>

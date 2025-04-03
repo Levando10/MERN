@@ -9,9 +9,13 @@ const app = express();
 
 app.use(
   cors({
+    // origin: [
+    //   process.env.FRONTEND_URL || "https://localhost:3000",
+    //   "https://my-mern-shop.vercel.app",
+    // ],
+
     origin: [
-      process.env.FRONTEND_URL || "https://localhost:3000",
-      "https://my-mern-shop.vercel.app",
+    "http://localhost:3000"
     ],
 
     credentials: true,
@@ -23,16 +27,18 @@ app.use(
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
-app.use((req, res, next) => {
-  res.on("finish", function() {
-    console.log(req.method, decodeURI(req.url), JSON.stringify(req.body), res.statusCode);
-  });
-  next();
-})
+// app.use((req, res, next) => {
+//   res.on("finish", function() {
+//     console.log(req.method, decodeURI(req.url), JSON.stringify(req.body), res.statusCode);
+//   });
+//   next();
+// })
 
 app.use("/api", router);
 
-const PORT = process.env.PORT || 8080;
+// const PORT = process.env.PORT || 8080;
+const PORT = 8080;
+
 
 connectDB()
   .then(() => {

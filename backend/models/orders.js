@@ -25,6 +25,11 @@ const orderSchema = mongoose.Schema({
     enum: ['Unpaid', 'Paid'],
     default: 'Unpaid'
   },
+  statusDelivery: {
+    type: String,
+    enum: ['Pending', 'Shipped', 'Delivered '],
+    default: 'Pending'
+  },
   paymentMethod: String,
   shippingAddress: String
 }, { timestamps: true });
