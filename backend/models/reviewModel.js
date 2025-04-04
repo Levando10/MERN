@@ -35,6 +35,11 @@ const reviewSchema = mongoose.Schema(
       type: String,
       default: null,
     },
+    adminId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      default: null,
+    },
     createdAt: {
       type: Date,
       default: Date.now,
