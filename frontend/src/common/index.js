@@ -2,6 +2,9 @@ const backendDomin = "https://mern-v6c4.onrender.com";
 // const backendDomin = "http://localhost:8080";
 
 const SummaryApi = {
+    default: {
+        url: backendDomin,
+    },
     signUP: {
         url: `${backendDomin}/api/signup`,
         method: "post"

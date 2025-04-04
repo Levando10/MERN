@@ -8,6 +8,7 @@ import Context from "../context";
 import SweetAlert from "sweetalert";
 import Swal from "sweetalert2";
 import { GoogleLogin } from "@react-oauth/google";
+import { io } from "socket.io-client";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -42,7 +43,6 @@ const Login = () => {
     });
 
     const dataApi = await dataResponse.json();
-
     if (dataApi.wrongEmail) {
       SweetAlert(
         "Email not found!",
@@ -89,6 +89,7 @@ const Login = () => {
     }
 
     if (dataApi.success) {
+      localStorage.setItem("token", dataApi.data);
       SweetAlert(
         "Login successful!",
         "Welcome back! You have successfully logged in!",
@@ -99,6 +100,19 @@ const Login = () => {
         navigate("/");
         fetchUserDetails();
         fetchUserAddToCart();
+        const token = dataApi.data;
+
+        const socket = io(SummaryApi.default.url, {
+          auth: { token },
+        });
+
+        socket.on("connect", () => {
+          console.log("Connected to WebSocket server!");
+        });
+
+        socket.on("receiveMessage", (message) => {
+          console.log("Received message:", message);
+        });
       }, 400);
     }
   };
@@ -147,7 +161,7 @@ const Login = () => {
         Swal.fire(
           "Password Reset Failed!",
           result.message ||
-          "An error occurred while resetting your password. Please try again later.",
+            "An error occurred while resetting your password. Please try again later.",
           "error"
         );
       }
@@ -179,6 +193,19 @@ const Login = () => {
           navigate("/");
           fetchUserDetails();
           fetchUserAddToCart();
+          const token = data.data;
+
+          const socket = io(SummaryApi.default.url, {
+            auth: { token },
+          });
+
+          socket.on("connect", () => {
+            console.log("Connected to WebSocket server!");
+          });
+
+          socket.on("receiveMessage", (message) => {
+            console.log("Received message:", message);
+          });
         }, 400);
       } else {
         Swal.fire({

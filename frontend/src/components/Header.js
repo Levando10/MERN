@@ -38,6 +38,7 @@ const Header = () => {
       );
       document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/"; 
       setTimeout(() => {
+        localStorage.clear()
         dispatch(setUserDetails(null));
         navigate("/");
       }, 300);
