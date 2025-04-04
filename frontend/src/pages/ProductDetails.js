@@ -247,21 +247,20 @@ const ProductDetails = () => {
       )}
 
       <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+          Customer Reviews
+        </h2>
         <div className="space-y-6">
           {data?.reviews && data?.reviews.length > 0 ? (
-            data?.reviews.map((review, index) => (
+            data.reviews.map((review, index) => (
               <div
                 key={index}
                 className="p-4 border-b border-gray-200 last:border-b-0"
               >
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-200">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300">
                     <img
-                      src={
-                        review?.userId?.profilePic || (
-                          <FaRegCircleUser className="w-8 h-8" />
-                        )
-                      }
+                      src={review?.userId?.profilePic || "/default-user.png"}
                       alt="User Profile"
                       className="w-full h-full object-cover"
                     />
@@ -275,42 +274,48 @@ const ProductDetails = () => {
                     </p>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, starIndex) => {
-                    if (review?.rating >= starIndex + 1) {
-                      return (
-                        <FaStar key={starIndex} className="text-red-600" />
-                      );
-                    } else if (
-                      review?.rating > starIndex &&
-                      review?.rating < starIndex + 1
-                    ) {
-                      return (
-                        <FaStarHalf
-                          key={starIndex}
-                          className="text-red-600"
-                        />
-                      );
-                    } else {
-                      return (
-                        <FaStar key={starIndex} className="text-gray-300" />
-                      );
-                    }
-                  })}
+                <div className="flex items-center gap-1 mb-2">
+                  {[...Array(5)].map((_, starIndex) => (
+                    <span key={starIndex}>
+                      {review?.rating > starIndex ? (
+                        <FaStar className="text-yellow-500" />
+                      ) : (
+                        <FaStar className="text-gray-300" />
+                      )}
+                    </span>
+                  ))}
                   <span className="ml-2 text-sm text-gray-500">
                     ({review?.rating})
                   </span>
                 </div>
-
-                <p className="text-gray-700 mb-6">{review?.review}</p>
-
+                <p className="text-gray-700 text-[16px] mb-4">
+                  {review?.review}
+                </p>
                 {review?.isAdminReplied && review?.adminReply && (
-                  <div className="p-4 bg-gray-50 border-t border-gray-200 rounded-md mt-6">
-                    <p className="text-sm text-gray-600 font-medium">
-                      Admin Reply:
-                    </p>
-                    <p className="text-sm text-gray-700">
+                  <div className="bg-gray-100 p-4 border-l-4 border-red-500 rounded-lg mt-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-400">
+                        <img
+                          src={
+                            review?.adminId?.profilePic || "/admin-avatar.png"
+                          }
+                          alt="Admin Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-red-600 flex items-center gap-2">
+                          {review?.adminId?.name || "Admin"}
+                          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-md">
+                            Quản trị viên
+                          </span>
+                        </span>
+                        <p className="text-xs text-gray-600">
+                          {review?.adminId?.email || "admin@example.com"}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-gray-800 text-[15px]">
                       {review?.adminReply}
                     </p>
                   </div>
@@ -318,7 +323,7 @@ const ProductDetails = () => {
               </div>
             ))
           ) : (
-            <p className="text-gray-500">No reviews yet</p>
+            <p className="text-gray-500 text-center">No reviews yet</p>
           )}
         </div>
       </div>

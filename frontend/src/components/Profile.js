@@ -31,6 +31,16 @@ export default function Profile() {
     confirmPassword: "",
   });
 
+  const fetchOrderHistory = async () => {
+    const response = await fetch(SummaryApi.historyPayment.url, {
+      method: SummaryApi.historyPayment.method,
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+    const responseData = await response.json();
+    setHistoryPayment(responseData.data);
+  };
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -38,16 +48,6 @@ export default function Profile() {
         phone: user.phone || "",
         address: user.address || "",
       });
-
-      const fetchOrderHistory = async () => {
-        const response = await fetch(SummaryApi.historyPayment.url, {
-          method: SummaryApi.historyPayment.method,
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        });
-        const responseData = await response.json();
-        setHistoryPayment(responseData.data);
-      };
 
       fetchOrderHistory();
     }
@@ -284,9 +284,31 @@ export default function Profile() {
 
   const handleShowDetail = (order) => {
     const isDelivered = order.statusDelivery === "Delivered";
+    let allReviewed = true;
+
     const productListHtml = order.items
-      .map(
-        (item, index) => `
+      .map((item, index) => {
+        if (!item.isReviewed) allReviewed = false;
+        const realStar = item?.productId?.reviews?.find(
+          (review) => review?.orderId === order?._id
+        );
+
+        const ratingStars = [...Array(5)]
+          .map(
+            (_, i) =>
+              `<span 
+                class="star ${item.isReviewed ? "disabled" : "clickable"}" 
+                data-index="${index}" 
+                data-value="${i + 1}" 
+                style="cursor: ${
+                  item.isReviewed ? "default" : "pointer"
+                }; font-size: 20px; color: ${
+                i < (realStar?.rating || 5) ? "#FFD700" : "#ccc"
+              };">★</span>`
+          )
+          .join("");
+
+        return `
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
             <img src="${item.productId.productImage[0] || "/placeholder.jpg"}" 
                  alt="${item.productId.productName}" 
@@ -299,62 +321,62 @@ export default function Profile() {
                   item.priceAtPurchase
                 )}</strong></p>
                 <p>Quantity: <strong>${item.quantity}</strong></p>
-  
+
                 ${
                   isDelivered
                     ? `
                 <div>
-                  <label for="rating-${index}">Rating (1-5):</label>
-                  <input
-                      type="number"
-                      id="rating-${index}"
-                      name="rating-${index}"
-                      min="1"
-                      max="5"
-                      step="1"
-                      oninput="this.value = Math.min(5, Math.max(1, this.value))"
-                      style="width: 50px;"
-                      value="${item.rating || 5}"
-                  />
+                  <p style="margin-bottom: 5px;">Rating:</p>
+                  <div class="rating-container" data-index="${index}">
+                    ${ratingStars}
+                  </div>
+                  <input type="hidden" id="rating-${index}" value="${
+                        item.rating || 5
+                      }">
                 </div>
-  
+
                 <div>
                   <label for="review-${index}">Review:</label>
                   <textarea
                       id="review-${index}"
                       name="review-${index}"
                       placeholder="Write your review here"
-                      style="width: 100%; min-height: 60px;max-height: 60px;resize: unset;min-width: 310px;"
-                  >${
-                    item.review ||
-                    "Good product for the price I am very satisfied with it. Next time I will buy the product again."
-                  }</textarea>
+                      style="width: 100%; min-height: 60px; max-height: 60px; resize: unset; min-width: 310px;"
+                      ${item.isReviewed ? "disabled" : ""}
+                  >${realStar?.review || "Good product, very satisfied!"}</textarea>
+                </div>
+
+                <div style="margin-top: 8px;">
+                  <input type="checkbox" id="reviewed-${index}" name="reviewed-${index}" 
+                  ${item.isReviewed ? "checked disabled" : ""}>
+                  <label for="reviewed-${index}" style="margin-left: 5px; font-size: 14px;">
+                    Mark as Reviewed
+                  </label>
                 </div>
                 `
                     : ""
                 }
             </div>
         </div>
-    `
-      )
+        `;
+      })
       .join("");
 
     let deliveryStatusColor = "";
-    if (order.statusDelivery === "Pending") {
-      deliveryStatusColor = "#854D0E";
-    } else if (order.statusDelivery === "Shipped") {
-      deliveryStatusColor = "#1E40AF";
-    } else if (order.statusDelivery === "Delivered") {
-      deliveryStatusColor = "#66534";
-    }
-
     let deliveryStatusBack = "";
-    if (order.statusDelivery === "Pending") {
-      deliveryStatusBack = "#FEF08A";
-    } else if (order.statusDelivery === "Shipped") {
-      deliveryStatusBack = "#BFDBFE";
-    } else if (order.statusDelivery === "Delivered") {
-      deliveryStatusBack = "#BBF7D0";
+    switch (order.statusDelivery) {
+      case "Pending":
+        deliveryStatusColor = "#854D0E";
+        deliveryStatusBack = "#FEF08A";
+        break;
+      case "Shipped":
+        deliveryStatusColor = "#1E40AF";
+        deliveryStatusBack = "#BFDBFE";
+        break;
+      case "Delivered":
+        deliveryStatusColor = "#065F46";
+        deliveryStatusBack = "#BBF7D0";
+        break;
     }
 
     Swal.fire({
@@ -385,29 +407,52 @@ export default function Profile() {
       `,
       confirmButtonText: "Save Review",
       confirmButtonColor: "#4CAF50",
-      showConfirmButton: isDelivered,
+      showConfirmButton: isDelivered && !allReviewed,
       cancelButtonText: "Close",
       showCancelButton: true,
       cancelButtonColor: "#DC2626",
+      didOpen: () => {
+        document.querySelectorAll(".clickable").forEach((star) => {
+          star.addEventListener("click", function () {
+            const index = this.getAttribute("data-index");
+            const value = this.getAttribute("data-value");
+            document
+              .querySelectorAll(
+                `.rating-container[data-index='${index}'] .star`
+              )
+              .forEach((s, i) => {
+                s.style.color = i < value ? "#FFD700" : "#ccc";
+              });
+            const ratingInput = document.getElementById(`rating-${index}`);
+            if (ratingInput) {
+              ratingInput.value = value;
+            }
+          });
+        });
+      },
       preConfirm: () => {
-        if (isDelivered) {
+        if (isDelivered && !allReviewed) {
           const updatedItems = order.items.map((item, index) => {
-            const rating = document.getElementById(`rating-${index}`).value;
-            const review = document.getElementById(`review-${index}`).value;                
+            const ratingInput = document.getElementById(`rating-${index}`);
+            const rating = ratingInput ? parseInt(ratingInput.value) : 5;
+            const review = document.getElementById(`review-${index}`).value;
+            const isReviewed = document.getElementById(
+              `reviewed-${index}`
+            ).checked;
             return {
               ...item,
-              isReviewed: true,
-              rating: parseInt(rating),
+              isReviewed,
+              rating,
               review,
             };
-          });     
+          });
           saveReview(order._id, updatedItems);
         }
       },
     });
   };
 
-  const saveReview = async (orderId, updatedItems) => {     
+  const saveReview = async (orderId, updatedItems) => {
     try {
       const response = await fetch(SummaryApi.addReview.url, {
         method: SummaryApi.addReview.method,
@@ -430,6 +475,7 @@ export default function Profile() {
           confirmButtonText: "Close",
           confirmButtonColor: "#DC2626",
         });
+        fetchOrderHistory();
       } else {
         Swal.fire({
           title: "Error!",

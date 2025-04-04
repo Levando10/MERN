@@ -5,12 +5,18 @@ const getProductDetails = async (req, res) => {
     const { productId } = req.body;
     const product = await productModel.findById(productId).populate({
       path: "reviews",
-      populate: {
-        path: "userId",
-        select: "email profilePic",
-      },
+      populate: [
+        {
+          path: "userId",
+          select: "email profilePic",
+        },
+        {
+          path: "adminId",
+          select: "email profilePic",
+        },
+      ],
     });
-
+    
     if (!product) {
       return res.status(404).json({
         message: "Product not found",
