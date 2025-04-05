@@ -27,7 +27,7 @@ const RevenueStatistics = () => {
     { name: "Product" }
   );
 
-  const formattedSalesByMonthData = chartData.salesByMonth.map(month => ({
+  const formattedSalesByMonthData = chartData.salesByMonth.map((month) => ({
     month: month.date,
     totalSales: month.totalSales,
   }));
@@ -55,45 +55,60 @@ const RevenueStatistics = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-      {/* Top Products Chart */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        <h2 className="text-xl font-bold mb-2">Top 5 Best Selling Products</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart width={500} height={300} data={[formattedTopProductsData]}>
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            {chartData.topProducts.slice(0, 5).map((product, index) => (
-              <Bar
-                key={product.name}
-                dataKey={product.name}
-                name={product.name}
-                fill={FIXED_COLORS[index]}
-              />
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+    <div className="bg-white pb-4">
+      <h2 style={{ padding: "4px" }} className="font-bold text-lg">
+        Management Revenue
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+        {/* Top Products Chart */}
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h2 className="text-xl font-bold mb-2">
+            Top 5 Best Selling Products
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              width={500}
+              height={300}
+              data={[formattedTopProductsData]}
+            >
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              {chartData.topProducts.slice(0, 5).map((product, index) => (
+                <Bar
+                  key={product.name}
+                  dataKey={product.name}
+                  name={product.name}
+                  fill={FIXED_COLORS[index]}
+                />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
-      {/* Sales by Month Chart */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        <h2 className="text-xl font-bold mb-2">Sales by Month</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart width={500} height={300} data={formattedSalesByMonthData}>
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="totalSales"
-              stroke="#8884d8"
-              activeDot={{ r: 8 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        {/* Sales by Month Chart */}
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h2 className="text-xl font-bold mb-2">Sales by Month</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart
+              width={500}
+              height={300}
+              data={formattedSalesByMonthData}
+            >
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="totalSales"
+                stroke="#8884d8"
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

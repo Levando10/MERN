@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const authToken = require("../backend/middleware/authToken");
+const messageModel = require("../backend/models/messageModel");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const connectDB = require("./config/db");
@@ -11,6 +11,7 @@ const jwt = require("jsonwebtoken");
 const userModel = require("./models/userModel");
 const app = express();
 const server = http.createServer(app);
+const adminId = "67e7d4d4239e88be03f4c93e";
 const io = socketIo(server, {
   cors: {
     // origin: ["http://localhost:3000"],
@@ -35,7 +36,6 @@ io.use(async (socket, next) => {
     const user = await userModel.findById(decoded._id);
 
     if (!user) {
-      console.log("User not found");
       return next(new Error("Authentication error"));
     }
     socket.user = user;
@@ -45,16 +45,45 @@ io.use(async (socket, next) => {
   }
 });
 
+const onlineUsers = {};
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.user.email);
+  const user = socket.user;
+  onlineUsers[user._id.toString()] = socket.id;
 
-  socket.on("sendMessage", (message) => {
-    console.log("Message from user:", message);
-    io.emit("receiveMessage", message);
+  socket.on("sendMessage", async (data) => {
+    const payload = {
+      from: data.from,
+      to: data.to,
+      message: data.message,
+    };
+    const newMessage = new messageModel({
+      sender: data.from,
+      receiver: data.to,
+      content: data.message,
+    });
+
+    await newMessage.save();
+    const isAdmin = data.from === adminId;
+
+    if (isAdmin) {
+      const userSocketId = onlineUsers[data.to];
+      if (userSocketId) {
+        io.to(userSocketId).emit("receiveMessage", payload);
+        console.log("Admin sent to user:", data.to, userSocketId);
+      }
+    } else {
+      const adminSocketId = onlineUsers[adminId];
+      const userSend = await userModel.findById(data.from);
+      payload.emailUser = userSend.email;
+      if (adminSocketId) {
+        io.to(adminSocketId).emit("receiveMessage", payload);
+        console.log("User sent to admin:", adminSocketId);
+      }
+    }
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.user.email);
+    delete onlineUsers[user._id.toString()];
   });
 });
 

@@ -45,6 +45,10 @@ const SummaryApi = {
         url: `${backendDomin}/api/history-payment`,
         method: 'get'
     },
+    fetchMessages: {
+        url: `${backendDomin}/api/fetchMessages`,
+        method: 'post'
+    },
     allUser: {
         url: `${backendDomin}/api/all-user`,
         method: 'get'

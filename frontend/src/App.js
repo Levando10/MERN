@@ -3,7 +3,6 @@ import { Outlet } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
-import { io } from "socket.io-client";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect, useState } from "react";
 import SummaryApi from "./common";
@@ -11,10 +10,12 @@ import Context from "./context";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "./store/userSlice";
 import Chat from "./components/Chat/Chat";
+import { useSelector } from "react-redux";
 
 function App() {
   const dispatch = useDispatch();
-  const [socket, setSocket] = useState(null);
+  const user = useSelector((state) => state?.user?.user);
+ 
   const [cartProductCount, setCartProductCount] = useState(0);
 
   const fetchUserDetails = async () => {
@@ -42,25 +43,6 @@ function App() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    // const newSocket = io("http://localhost:8080", {
-    const newSocket = io("https://mern-v6c4.onrender.com", {
-      auth: { token },
-    });
-
-    newSocket.on("connect", () => {
-      console.log("Connected to WebSocket server!");
-    });
-
-    setSocket(newSocket);
-
-    // Cleanup khi component unmount
-    return () => {
-      newSocket.close();
-    };
-  }, []);
-
-  useEffect(() => {
     fetchUserDetails();
     fetchUserAddToCart();
   }, []);
@@ -68,7 +50,6 @@ function App() {
     <>
       <Context.Provider
         value={{
-          socket,
           fetchUserDetails,
           cartProductCount,
           fetchUserAddToCart,
@@ -81,7 +62,7 @@ function App() {
           <Outlet />
         </main>
         <Footer />
-        <Chat />
+        {user?._id && user?.role !== "ADMIN" && <Chat />}
       </Context.Provider>
     </>
   );
