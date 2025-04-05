@@ -21,7 +21,7 @@ const AllProducts = () => {
     <div className="bg-white pb-4">
 
       <div className=' flex justify-between'>
-        <h2 style={{ padding: "4px" }} className='font-bold text-lg'>All Product</h2>
+        <h2 style={{ padding: "4px" }} className='font-bold text-lg'>Management Product</h2>
         <button className='border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all py-1 px-3 rounded-full ' onClick={() => setOpenUploadProduct(true)}>Upload Product</button>
       </div>
 

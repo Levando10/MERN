@@ -171,7 +171,7 @@ const Allorders = () => {
 
     return (
         <div className="bg-white pb-4">
-            <h2 style={{ padding: "4px" }} className='font-bold text-lg'>All Order</h2>
+            <h2 style={{ padding: "4px" }} className='font-bold text-lg'>Management Order</h2>
             <table className="w-full userTable">
                 <thead>
                     <tr className="bg-black text-white">

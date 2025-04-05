@@ -8,7 +8,6 @@ import Context from "../context";
 import SweetAlert from "sweetalert";
 import Swal from "sweetalert2";
 import { GoogleLogin } from "@react-oauth/google";
-import { io } from "socket.io-client";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -100,19 +99,6 @@ const Login = () => {
         navigate("/");
         fetchUserDetails();
         fetchUserAddToCart();
-        const token = dataApi.data;
-
-        const socket = io(SummaryApi.default.url, {
-          auth: { token },
-        });
-
-        socket.on("connect", () => {
-          console.log("Connected to WebSocket server!");
-        });
-
-        socket.on("receiveMessage", (message) => {
-          console.log("Received message:", message);
-        });
       }, 400);
     }
   };
@@ -183,6 +169,7 @@ const Login = () => {
 
       const data = await res.json();
       if (data.success) {
+        localStorage.setItem("token", data.data);
         SweetAlert(
           "Login google success!",
           "Welcome back! You have successfully logged in!",
@@ -193,19 +180,6 @@ const Login = () => {
           navigate("/");
           fetchUserDetails();
           fetchUserAddToCart();
-          const token = data.data;
-
-          const socket = io(SummaryApi.default.url, {
-            auth: { token },
-          });
-
-          socket.on("connect", () => {
-            console.log("Connected to WebSocket server!");
-          });
-
-          socket.on("receiveMessage", (message) => {
-            console.log("Received message:", message);
-          });
         }, 400);
       } else {
         Swal.fire({

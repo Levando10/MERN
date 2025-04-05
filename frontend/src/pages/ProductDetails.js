@@ -307,7 +307,7 @@ const ProductDetails = () => {
                         <span className="font-semibold text-red-600 flex items-center gap-2">
                           {review?.adminId?.name || "Admin"}
                           <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-md">
-                            Quản trị viên
+                            Administrator
                           </span>
                         </span>
                         <p className="text-xs text-gray-600">

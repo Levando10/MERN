@@ -34,6 +34,7 @@ const deleteAddToCartProduct = require("../controller/user/deleteAddToCartProduc
 const searchProduct = require("../controller/product/searchProduct");
 const filterProductController = require("../controller/product/filterProduct");
 const addReview = require("../controller/user/review/addReview");
+const chatMessage = require("../controller/user/chat/chatMessage");
 const adminStatistics = require("../controller/statistic/adminStatistic");
 
 // Payment
@@ -52,6 +53,7 @@ router.post("/update-avatar", authToken, updateAvatar);
 router.post("/update-profile", authToken, updateProfile);
 router.get("/user-details", authToken, userDetailsController);
 router.post('/create-review',authToken, addReview);
+router.post('/fetchMessages',authToken, chatMessage);
 router.get("/userLogout", userLogout);
 
 //admin panel

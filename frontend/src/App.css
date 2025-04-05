@@ -36,7 +36,7 @@
 }
 
 .open-chat-btn {
-  background-color: #DC2626;
+  background-color: #dc2626;
   color: white;
   border: none;
   padding: 16px;
@@ -69,8 +69,8 @@
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 320px;
-  width: 320px;
+  max-width: 415px;
+  width: 415px;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -78,8 +78,8 @@
   bottom: 10px;
   right: 0;
   transition: all 0.3s ease;
-  max-height: 400px;
-  height: 400px;
+  max-height: 480px;
+  height: 480px;
   overflow-y: auto;
 }
 
@@ -106,7 +106,7 @@
   flex: 1;
   padding: 10px;
   overflow-y: auto;
-  max-height: 250px; 
+  max-height: 320px;
   margin-bottom: 10px;
 }
 
@@ -144,4 +144,137 @@
 .chat-container .open-chat-btn {
   transform: scale(0.9);
   opacity: 0.7;
+}
+
+.my-message {
+  background-color: #b34646;
+  color: white;
+  align-self: flex-end;
+  border-radius: 8px;
+  padding: 8px 16px;
+  max-width: 75%;
+  margin-bottom: 10px;
+  margin-left: auto;
+}
+
+.admin-message {
+  background-color: rgb(219, 199, 199);
+  color: #080809;
+  align-self: flex-start;
+  border-radius: 8px;
+  padding: 8px 16px;
+  max-width: 60%;
+  margin-bottom: 10px;
+  margin-right: auto;
+}
+
+/* Admin Chat container */
+.adm-chat-container {
+  display: flex;
+  height: 85vh;
+  border-top: 1px solid #ddd;
+}
+
+.adm-user-list {
+  background-color: #f7f7f7;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  overflow-y: auto;
+  min-width: 305px;
+}
+
+.adm-user-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.adm-user-avatar img {
+  border-radius: 50%;
+}
+
+.adm-user-name {
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.adm-recent-message {
+  font-size: 12px;
+  color: #888;
+  margin-top: 5px;
+}
+
+.adm-user-chat-details {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.adm-chat-header {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.adm-messages {
+  flex-grow: 1;
+  padding: 10px;
+  overflow-y: scroll;
+  margin-bottom: 20px;
+}
+
+.adm-message {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.adm-message.bg-red-200 {
+  background-color: #b34646;
+  color: white;
+  align-self: flex-end;
+  border-radius: 8px;
+  padding: 8px 16px;
+  max-width: 75%;
+  margin-bottom: 10px;
+  margin-left: auto;
+}
+
+.adm-message.bg-blue-200 {
+  background-color: rgb(219, 199, 199);
+  color: #080809;
+  align-self: flex-start;
+  border-radius: 8px;
+  padding: 8px 16px;
+  max-width: 75%;
+  margin-bottom: 10px;
+  margin-right: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.adm-message-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.adm-input {
+  width: 93%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  margin-right: 10px;
+}
+
+.adm-send-btn {
+  padding: 10px;
+  background-color: #e94747;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
