@@ -11,7 +11,8 @@
 }
 .userTable th {
   @apply border text-base font-medium;
-  height: 32px
+  height: 32px;
+  border-width: unset !important;
 }
 
 .userTable td {
