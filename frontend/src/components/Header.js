@@ -36,9 +36,9 @@ const Header = () => {
         "You have been logged out. See you next time!",
         "success"
       );
-      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/"; 
+      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
       setTimeout(() => {
-        localStorage.clear()
+        localStorage.clear();
         dispatch(setUserDetails(null));
         navigate("/");
       }, 300);
@@ -59,7 +59,7 @@ const Header = () => {
       navigate("/search");
     }
   };
-  
+
   return (
     <header className="h-16 shadow-md bg-white fixed w-full z-40">
       <div className=" h-full container mx-auto flex items-center px-4 justify-between">
@@ -69,18 +69,22 @@ const Header = () => {
           </Link>
         </div>
 
-        {user?.role === "ADMIN" ? "" : (<div className="hidden lg:flex items-center w-full justify-between max-w-sm border rounded-full focus-within:shadow pl-2">
-          <input
-            type="text"
-            placeholder="search product here..."
-            className="w-full outline-none"
-            onChange={handleSearch}
-            value={search}
-          />
-          <div className="text-lg min-w-[50px] h-8 bg-red-600 flex items-center justify-center rounded-r-full text-white">
-            <GrSearch />
+        {user?.role === "ADMIN" ? (
+          ""
+        ) : (
+          <div className="hidden lg:flex items-center w-full justify-between max-w-sm border rounded-full focus-within:shadow pl-2">
+            <input
+              type="text"
+              placeholder="search product here..."
+              className="w-full outline-none"
+              onChange={handleSearch}
+              value={search}
+            />
+            <div className="text-lg min-w-[50px] h-8 bg-red-600 flex items-center justify-center rounded-r-full text-white">
+              <GrSearch />
+            </div>
           </div>
-        </div>)}
+        )}
 
         <div className="flex items-center gap-7">
           <div
@@ -103,7 +107,7 @@ const Header = () => {
             )}
 
             {menuDisplay && (
-              <div className="absolute bg-white top-8 right-0 w-48 p-3 shadow-lg rounded-lg border border-gray-200 transition-all duration-300">
+              <div className="min-width-240 absolute bg-white top-8 right-0 w-48 p-3 shadow-lg rounded-lg border border-gray-200 transition-all duration-300">
                 <nav className="flex flex-col gap-2">
                   {user?.role === ROLE.ADMIN && (
                     <Link
@@ -115,9 +119,29 @@ const Header = () => {
                   )}
                 </nav>
                 <nav className="flex flex-col gap-2">
+                  {user?.role === ROLE.ADMIN && (
+                    <Link
+                      to={"/admin-panel/all-users"}
+                      className="block px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
+                    >
+                      Management Users
+                    </Link>
+                  )}
+                </nav>
+                <nav className="flex flex-col gap-2">
+                  {user?.role === ROLE.ADMIN && (
+                    <Link
+                      to={"/admin-panel/all-orders"}
+                      className="block px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
+                    >
+                      Management Order
+                    </Link>
+                  )}
+                </nav>
+                <nav className="flex flex-col gap-2">
                   {user?.role && (
                     <Link
-                      to={"/profile"}
+                      to="/profile?tab=account"
                       className="block px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
                     >
                       Profile
@@ -127,7 +151,7 @@ const Header = () => {
                 <nav className="flex flex-col gap-2">
                   {user?.role === ROLE.GENERAL && (
                     <Link
-                      to={"/admin-panel/all-products"}
+                      to="/profile?tab=orders"
                       className="block px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
                     >
                       History payment
@@ -138,7 +162,7 @@ const Header = () => {
             )}
           </div>
 
-          {user?._id && (
+          {user?._id && user?.role === ROLE.GENERAL && (
             <Link to={"/cart"} className="text-2xl relative">
               <span>
                 <FaShoppingCart />
