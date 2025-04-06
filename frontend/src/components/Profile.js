@@ -182,7 +182,7 @@ export default function Profile() {
     });
   };
 
-  const filteredOrders = historyPayment.filter((order) => {
+  const filteredOrders = historyPayment?.filter((order) => {
     const orderDate = new Date(order.createdAt).setHours(0, 0, 0, 0);
     const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null;
     const end = endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null;
@@ -756,12 +756,12 @@ export default function Profile() {
               <p className="text-red-500 text-sm">{errorMessage}</p>
             )}
 
-            {filteredOrders && filteredOrders.length ? (
+            {filteredOrders && filteredOrders?.length ? (
               <div
                 className="space-y-4"
                 style={{ overflow: "auto", maxHeight: "490px" }}
               >
-                {filteredOrders.map((order, index) => (
+                {filteredOrders?.map((order, index) => (
                   <div
                     key={index}
                     className="p-4 border rounded-lg shadow-sm bg-gray-50"
