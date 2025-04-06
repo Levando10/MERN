@@ -5,7 +5,7 @@ const addToCartController = async (req, res) => {
   try {
     const { productId } = req?.body;
     const currentUser = req.userId;
-    const isProductAvailable = await addToCartModel.findOne({
+    const existingCartItem = await addToCartModel.findOne({
       productId,
       userId: currentUser,
     });
@@ -19,26 +19,29 @@ const addToCartController = async (req, res) => {
       });
     }
 
-    if (isProductAvailable) {
+    if (existingCartItem) {
+      existingCartItem.quantity += 1;
+      await existingCartItem.save();
+
       return res.json({
-        message: "Already exits in Add to cart",
-        success: false,
-        available: true,
+        data: existingCartItem,
+        message: "Increased quantity in cart",
+        success: true,
+        error: false,
       });
     }
 
-    const payload = {
-      productId: productId,
+    const newCartItem = new addToCartModel({
+      productId,
       quantity: 1,
       userId: currentUser,
       price: product.sellingPrice,
-    };
+    });
 
-    const newAddToCart = new addToCartModel(payload);
-    const saveProduct = await newAddToCart.save();
+    const savedItem = await newCartItem.save();
 
     return res.json({
-      data: saveProduct,
+      data: savedItem,
       message: "Product Added in Cart",
       success: true,
       error: false,

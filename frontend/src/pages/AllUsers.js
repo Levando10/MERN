@@ -89,81 +89,85 @@ const AllUsers = () => {
   }, []);
 
   return (
-    <div className="bg-white pb-4">
-      <h2 style={{padding:"4px"}} className='font-bold text-lg'>Management Users</h2>
-      <table className="w-full userTable">
-        <thead>
-          <tr className="bg-black text-white">
-            <th>Sr.</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Address</th>
-            <th>Role</th>
-            <th>Created Date</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {allUser.map((el, index) => {
-            return (
-              <tr
-                key={el._id}
-                className={el.isBanned ? "bg-gray-200 text-red-500" : ""}
-              >
-                <td>{index + 1}</td>
-                <td>
-                  {el?.name}{" "}
-                  {el.isBanned && (
-                    <span className="text-red-500">(Banned)</span>
-                  )}
-                </td>
-                <td>{el?.email}</td>
-                <td>{el?.address || "N/A"}</td>
-                <td>{el?.role}</td>
-                <td>{moment(el?.createdAt).format("LL")}</td>
-                <td>
-                  <button
-                    className={`p-2 rounded-full cursor-pointer ${
-                      el.isBanned
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-green-100 hover:bg-green-500 hover:text-white"
-                    }`}
-                    onClick={() => {
-                      if (!el.isBanned) {
-                        setUpdateUserDetails(el);
-                        setOpenUpdateRole(true);
+    <>
+      <h2 style={{ padding: "4px" }} className="font-bold text-lg">
+        Management Users
+      </h2>
+      <div className="table-container bg-white pb-4">
+        <table className="w-full userTable">
+          <thead>
+            <tr className="sticky-head bg-black text-white">
+              <th>Sr.</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Address</th>
+              <th>Role</th>
+              <th>Created Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {allUser.map((el, index) => {
+              return (
+                <tr
+                  key={el._id}
+                  className={el.isBanned ? "bg-gray-200 text-red-500" : ""}
+                >
+                  <td>{index + 1}</td>
+                  <td>
+                    {el?.name}{" "}
+                    {el.isBanned && (
+                      <span className="text-red-500">(Banned)</span>
+                    )}
+                  </td>
+                  <td>{el?.email}</td>
+                  <td>{el?.address || "N/A"}</td>
+                  <td>{el?.role}</td>
+                  <td>{moment(el?.createdAt).format("LL")}</td>
+                  <td>
+                    <button
+                      className={`p-2 rounded-full cursor-pointer ${
+                        el.isBanned
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-green-100 hover:bg-green-500 hover:text-white"
+                      }`}
+                      onClick={() => {
+                        if (!el.isBanned) {
+                          setUpdateUserDetails(el);
+                          setOpenUpdateRole(true);
+                        }
+                      }}
+                      disabled={el.isBanned}
+                    >
+                      <MdModeEdit />
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleBanUnBanUser(el?._id, el?.name, el?.isBanned)
                       }
-                    }}
-                    disabled={el.isBanned}
-                  >
-                    <MdModeEdit />
-                  </button>
-                  <button
-                    onClick={() =>
-                      handleBanUnBanUser(el?._id, el?.name, el?.isBanned)
-                    }
-                    className="bg-red-100 p-2 rounded-full cursor-pointer hover:bg-red-500 hover:text-white"
-                  >
-                    <MdBlock />
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                      className="bg-red-100 p-2 rounded-full cursor-pointer hover:bg-red-500 hover:text-white"
+                    >
+                      <MdBlock />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
 
-      {openUpdateRole && (
-        <ChangeUserRole
-          onClose={() => setOpenUpdateRole(false)}
-          name={updateUserDetails.name}
-          email={updateUserDetails.email}
-          role={updateUserDetails.role}
-          userId={updateUserDetails._id}
-          callFunc={fetchAllUsers}
-        />
-      )}
-    </div>
+        {openUpdateRole && (
+          <ChangeUserRole
+            onClose={() => setOpenUpdateRole(false)}
+            name={updateUserDetails.name}
+            email={updateUserDetails.email}
+            role={updateUserDetails.role}
+            userId={updateUserDetails._id}
+            callFunc={fetchAllUsers}
+          />
+        )}
+      </div>
+    </>
   );
 };
 

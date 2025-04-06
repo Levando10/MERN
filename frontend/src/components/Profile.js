@@ -10,11 +10,15 @@ import { storage } from "../helpers/firebaseConfig";
 import Swal from "sweetalert2";
 import { HiOutlineEye } from "react-icons/hi";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { useLocation } from "react-router-dom";
 
 export default function Profile() {
   const user = useSelector((state) => state?.user?.user);
   const dispatch = useDispatch();
-  const [selectedTab, setSelectedTab] = useState("account");
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const initialTab = queryParams.get("tab") || "account";
+  const [selectedTab, setSelectedTab] = useState(initialTab);
   const [editing, setEditing] = useState(false);
   const [historyPayment, setHistoryPayment] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
@@ -22,6 +26,7 @@ export default function Profile() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [deliveryStatusFilter, setDeliveryStatusFilter] = useState("All");
   const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
     name: "",
@@ -182,17 +187,14 @@ export default function Profile() {
     const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null;
     const end = endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null;
 
-    if (start && end) {
-      return orderDate >= start && orderDate <= end;
-    }
-    if (start) {
-      return orderDate >= start;
-    }
-    if (end) {
-      return orderDate <= end;
-    }
+    const inDateRange =
+      (!start || orderDate >= start) && (!end || orderDate <= end);
 
-    return true;
+    const matchesStatus =
+      deliveryStatusFilter === "All" ||
+      order.statusDelivery === deliveryStatusFilter;
+
+    return inDateRange && matchesStatus;
   });
 
   const handleFileChange = async (event) => {
@@ -343,7 +345,9 @@ export default function Profile() {
                       placeholder="Write your review here"
                       style="width: 100%; min-height: 60px; max-height: 60px; resize: unset; min-width: 310px;"
                       ${item.isReviewed ? "disabled" : ""}
-                  >${realStar?.review || "Good product, very satisfied!"}</textarea>
+                  >${
+                    realStar?.review || "Good product, very satisfied!"
+                  }</textarea>
                 </div>
 
                 <div style="margin-top: 8px;">
@@ -519,7 +523,7 @@ export default function Profile() {
           <li
             className={`flex items-center p-3 cursor-pointer rounded-lg transition duration-200 ${
               selectedTab === "account"
-                ? "bg-blue-500 text-white"
+                ? "text-white bg-red-600 hover:bg-red-700"
                 : "bg-gray-100 hover:bg-gray-200"
             }`}
             onClick={() => setSelectedTab("account")}
@@ -529,7 +533,7 @@ export default function Profile() {
           <li
             className={`flex items-center p-3 cursor-pointer rounded-lg transition duration-200 ${
               selectedTab === "orders"
-                ? "bg-blue-500 text-white"
+                ? "text-white bg-red-600 hover:bg-red-700"
                 : "bg-gray-100 hover:bg-gray-200"
             }`}
             onClick={() => setSelectedTab("orders")}
@@ -729,6 +733,23 @@ export default function Profile() {
                   disabled={!startDate}
                   className="border p-2 rounded w-full"
                 />
+              </div>
+              <div className="mt-auto flex gap-2">
+                {["All", "Pending", "Shipped", "Delivered"].map(
+                  (status) => (
+                    <button
+                      key={status}
+                      onClick={() => setDeliveryStatusFilter(status)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium border transition ${
+                        deliveryStatusFilter === status
+                          ? "text-white bg-red-600 hover:bg-red-700"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      }`}
+                    >
+                      {status}
+                    </button>
+                  )
+                )}
               </div>
             </div>
             {errorMessage && (
