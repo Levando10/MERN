@@ -21,6 +21,10 @@ const SummaryApi = {
         url: `${backendDomin}/api/create-review`,
         method: "post"
     },
+    adminReply: {
+        url: `${backendDomin}/api/admin-reply`,
+        method: "post"
+    },
     forgotPassword: {
         url: `${backendDomin}/api/forgot-password`,
         method: "post"

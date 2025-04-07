@@ -36,6 +36,7 @@ const filterProductController = require("../controller/product/filterProduct");
 const addReview = require("../controller/user/review/addReview");
 const chatMessage = require("../controller/user/chat/chatMessage");
 const adminStatistics = require("../controller/statistic/adminStatistic");
+const adminReplyReview = require("../controller/user/review/adminReplyReview");
 
 // Payment
 router.post("/create-order", authToken, createOrder);
@@ -61,6 +62,7 @@ router.get("/all-orders", authToken, allOrders);
 router.get("/all-user", authToken, allUsers);
 router.post("/update-user", authToken, updateUser);
 router.post("/ban-user", authToken, banUser);
+router.post("/admin-reply", authToken, adminReplyReview);
 router.get("/revenue-statistic", adminStatistics);
 
 //product
