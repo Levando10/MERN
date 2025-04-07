@@ -7,9 +7,12 @@ import displayINRCurrency from "../helpers/displayCurrency";
 import CategroyWiseProductDisplay from "../components/CategoryWiseProductDisplay";
 import addToCart from "../helpers/addToCart";
 import Context from "../context";
-import { FaRegCircleUser } from "react-icons/fa6";
+import { useSelector } from "react-redux";
+import SweetAlert from "sweetalert";
 
 const ProductDetails = () => {
+  const user = useSelector((state) => state?.user?.user);
+  const [adminReplies, setAdminReplies] = useState({});
   const [totalRatings, setTotalRatings] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [data, setData] = useState({
@@ -59,6 +62,39 @@ const ProductDetails = () => {
     fetchProductDetails();
   }, [params]);
 
+  const handleAdminReply = async (reviewId) => {
+    const reply = adminReplies[reviewId];
+    if (!reply?.trim()) return;
+
+    const response = await fetch(SummaryApi.adminReply.url, {
+      method: SummaryApi.adminReply.method,
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        reviewId,
+        reply,
+      }),
+    });
+
+    const responseData = await response.json();
+
+    if (responseData.success === false) {
+      SweetAlert("Reply Failed", `${responseData.message}`, "error");
+    } else {
+      setTimeout(() => {
+        SweetAlert(
+          "Reply Sent!",
+          "You have successfully replied to the user's review.",
+          "success"
+        );
+      }, 300);
+      setAdminReplies((prev) => ({ ...prev, [reviewId]: "" }));
+      fetchProductDetails();
+    }
+  };
+
   const handleMouseEnterProduct = (imageURL) => {
     setActiveImage(imageURL);
   };
@@ -91,6 +127,11 @@ const ProductDetails = () => {
     await addToCart(e, id);
     fetchUserAddToCart();
     navigate("/cart");
+  };
+
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
   };
 
   return (
@@ -272,6 +313,9 @@ const ProductDetails = () => {
                     <p className="text-sm text-gray-500">
                       {review?.userId?.email}
                     </p>
+                    <p className="text-sm text-gray-500">
+                      {formatDate(review?.createdAt)}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 mb-2">
@@ -291,7 +335,7 @@ const ProductDetails = () => {
                 <p className="text-gray-700 text-[16px] mb-4">
                   {review?.review}
                 </p>
-                {review?.isAdminReplied && review?.adminReply && (
+                {review?.isAdminReplied && review?.adminReply ? (
                   <div className="bg-gray-100 p-4 border-l-4 border-red-500 rounded-lg mt-4">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-400">
@@ -319,6 +363,38 @@ const ProductDetails = () => {
                       {review?.adminReply}
                     </p>
                   </div>
+                ) : (
+                  user?.role === "ADMIN" && (
+                    <div className="mt-4">
+                      <label
+                        htmlFor="adminReply"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Reply to user:
+                      </label>
+                      <textarea
+                        style={{ resize: "unset" }}
+                        id={`adminReply-${review._id}`}
+                        name={`adminReply-${review._id}`}
+                        rows={3}
+                        placeholder="Write your reply..."
+                        value={adminReplies[review._id] || ""}
+                        onChange={(e) =>
+                          setAdminReplies({
+                            ...adminReplies,
+                            [review._id]: e.target.value,
+                          })
+                        }
+                        className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                      />
+                      <button
+                        onClick={() => handleAdminReply(review._id)}
+                        className="mt-2 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+                      >
+                        Send Reply
+                      </button>
+                    </div>
+                  )
                 )}
               </div>
             ))

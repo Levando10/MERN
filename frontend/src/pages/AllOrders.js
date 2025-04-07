@@ -4,9 +4,15 @@ import SweetAlert from "sweetalert";
 import { HiOutlineEye } from "react-icons/hi";
 import Swal from "sweetalert2";
 import { FaEdit } from "react-icons/fa";
+import moment from "moment";
 
 const Allorders = () => {
+  const [deliveryStatusFilter, setDeliveryStatusFilter] = useState("All");
   const [allOrders, setAllorders] = useState([]);
+  const [searchOrderName, setSearchOrderName] = useState("");
+  const [orderStartDate, setOrderStartDate] = useState("");
+  const [debouncedSearchOrderName, setDebouncedSearchOrderName] =
+    useState(searchOrderName);
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "asc",
@@ -31,6 +37,13 @@ const Allorders = () => {
       );
     }
   };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedSearchOrderName(searchOrderName);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchOrderName]);
 
   useEffect(() => {
     fetchAllorders();
@@ -93,21 +106,47 @@ const Allorders = () => {
     setSortConfig({ key, direction });
   };
 
+  const filteredOrders = React.useMemo(() => {
+    return allOrders.filter((order) => {
+      const normalizeText = (text) =>
+        text
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase();
+
+      const matchesName = normalizeText(order.userId?.name || "").includes(
+        normalizeText(searchOrderName)
+      );
+
+      const orderDate = moment(order.createdAt);
+      const matchesDate = orderStartDate
+        ? orderDate.isSameOrAfter(moment(orderStartDate), "day")
+        : true;
+
+      const matchesDeliveryStatus =
+        deliveryStatusFilter === "All"
+          ? true
+          : order.statusDelivery === deliveryStatusFilter;
+
+      return matchesName && matchesDate && matchesDeliveryStatus;
+    });
+  }, [allOrders, searchOrderName, orderStartDate, deliveryStatusFilter]);
+
   const sortedOrders = React.useMemo(() => {
-    let sortedData = [...allOrders];
+    let sortedData = [...filteredOrders];
     if (sortConfig.key) {
       sortedData.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
+        const aValue =
+          sortConfig.key === "userId" ? a.userId?.name : a[sortConfig.key];
+        const bValue =
+          sortConfig.key === "userId" ? b.userId?.name : b[sortConfig.key];
+        if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
         return 0;
       });
     }
     return sortedData;
-  }, [allOrders, sortConfig]);
+  }, [filteredOrders, sortConfig]);
 
   const updateOrderStatus = async (orderId, currentStatus) => {
     const { value: newStatus } = await Swal.fire({
@@ -177,88 +216,144 @@ const Allorders = () => {
       <h2 style={{ padding: "4px" }} className="font-bold text-lg">
         Management Order
       </h2>
-      <div className="table-container bg-white pb-4">
-        <table className="w-full userTable">
-          <thead>
-            <tr className="sticky-head bg-black text-white">
-              <th>Sr.</th>
-              <th>
-                <button onClick={() => requestSort("userId")}>Name</button>
-              </th>
-              <th>
-                <button onClick={() => requestSort("totalAmount")}>
-                  Total Amount
-                </button>
-              </th>
-              <th>
-                <button onClick={() => requestSort("status")}>Status</button>
-              </th>
-              <th>
-                <button onClick={() => requestSort("createdAt")}>
-                  Date Created
-                </button>
-              </th>
-              <th>
-                <button onClick={() => requestSort("paymentMethod")}>
-                  Payment Method
-                </button>
-              </th>
-              <th>
-                <button onClick={() => requestSort("shippingAddress")}>
-                  Shipping Address
-                </button>
-              </th>
-              <th>
-                <button onClick={() => requestSort("statusDelivery")}>
-                  Update Delivery
-                </button>
-              </th>
-              <th>Detail</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedOrders.map((order, index) => {
-              return (
-                <tr key={order._id}>
-                  <td>{index + 1}</td>
-                  <td>{order.userId ? order.userId.name : "N/A"}</td>
-                  <td className="price-right">
-                    {formatCurrency(order.totalAmount)}
-                  </td>
-                  <td>{order.status}</td>
-                  <td>{formatDate(order.createdAt)}</td>
-                  <td>{order.paymentMethod || "N/A"}</td>
-                  <td>{order.shippingAddress || "N/A"}</td>
-                  <td className="flex justify-between gap-2 items-center">
-                    <span
-                      style={{ minWidth: "85px" }}
-                      className={`px-2 py-1 rounded ${
-                        statusColors[order.statusDelivery]
-                      }`}
-                    >
-                      {order.statusDelivery}
-                    </span>
-                    <FaEdit
-                      onClick={() =>
-                        updateOrderStatus(order._id, order.statusDelivery)
-                      }
-                      size={16}
-                      className="text-gray-600 cursor-pointer hover:text-blue-500 transition"
-                    />
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => handleShowDetail(order)}
-                      className="text-gray-600 hover:text-blue-500 transition"
-                    >
-                      <HiOutlineEye size={22} />
-                    </button>
+      <div className="bg-white pb-4">
+        <div className="flex gap-4 items-center mb-4">
+          <input
+            type="text"
+            value={searchOrderName}
+            style={{ width: "25%" }}
+            onChange={(e) => setSearchOrderName(e.target.value)}
+            placeholder="Search by user name"
+            className="border p-2 rounded"
+          />
+          <input
+            type="date"
+            style={{ width: "25%" }}
+            max={moment().format("YYYY-MM-DD")}
+            value={orderStartDate}
+            onChange={(e) => setOrderStartDate(e.target.value)}
+            className="border p-2 rounded"
+          />
+          <div
+            style={{ marginBottom: "0px !important" }}
+            className="flex gap-2"
+          >
+            {["All", "Pending", "Shipped", "Delivered"].map((status) => (
+              <button
+                key={status}
+                onClick={() => setDeliveryStatusFilter(status)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium border transition ${
+                  deliveryStatusFilter === status
+                    ? "text-white bg-red-600 hover:bg-red-700"
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                }`}
+              >
+                {status}
+              </button>
+            ))}
+            <button
+              onClick={() => {
+                setSearchOrderName("");
+                setOrderStartDate("");
+                setDeliveryStatusFilter("All");
+              }}
+              className="px-4 py-2 rounded-lg text-sm font-medium border bg-yellow-100 hover:bg-yellow-300 text-yellow-800 transition"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+        <div className="table-container">
+          <table className="w-full userTable">
+            <thead>
+              <tr className="sticky-head bg-black text-white">
+                <th>Sr.</th>
+                <th>
+                  <button onClick={() => requestSort("userId")}>Name</button>
+                </th>
+                <th>
+                  <button onClick={() => requestSort("totalAmount")}>
+                    Total Amount
+                  </button>
+                </th>
+                <th>
+                  <button onClick={() => requestSort("status")}>Status</button>
+                </th>
+                <th>
+                  <button onClick={() => requestSort("createdAt")}>
+                    Date Created
+                  </button>
+                </th>
+                <th>
+                  <button onClick={() => requestSort("paymentMethod")}>
+                    Payment Method
+                  </button>
+                </th>
+                <th>
+                  <button onClick={() => requestSort("shippingAddress")}>
+                    Shipping Address
+                  </button>
+                </th>
+                <th>
+                  <button onClick={() => requestSort("statusDelivery")}>
+                    Update Delivery
+                  </button>
+                </th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="text-center text-gray-500 py-4">
+                    No orders match your search.
                   </td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              ) : (
+                sortedOrders.map((order, index) => {
+                  return (
+                    <tr key={order._id}>
+                      <td>{index + 1}</td>
+                      <td>{order.userId ? order.userId.name : "N/A"}</td>
+                      <td className="price-right">
+                        {formatCurrency(order.totalAmount)}
+                      </td>
+                      <td>{order.status}</td>
+                      <td>{formatDate(order.createdAt)}</td>
+                      <td>{order.paymentMethod || "N/A"}</td>
+                      <td>{order.shippingAddress || "N/A"}</td>
+                      <td className="flex justify-between gap-2 items-center">
+                        <span
+                          style={{ minWidth: "85px" }}
+                          className={`px-2 py-1 rounded ${
+                            statusColors[order.statusDelivery]
+                          }`}
+                        >
+                          {order.statusDelivery}
+                        </span>
+                        <FaEdit
+                          onClick={() =>
+                            updateOrderStatus(order._id, order.statusDelivery)
+                          }
+                          size={16}
+                          className="text-gray-600 cursor-pointer hover:text-blue-500 transition"
+                        />
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => handleShowDetail(order)}
+                          className="text-gray-600 hover:text-blue-500 transition"
+                        >
+                          <HiOutlineEye size={22} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );
