@@ -42,7 +42,6 @@ const Login = () => {
     });
 
     const dataApi = await dataResponse.json();
-
     if (dataApi.wrongEmail) {
       SweetAlert(
         "Email not found!",
@@ -89,6 +88,7 @@ const Login = () => {
     }
 
     if (dataApi.success) {
+      localStorage.setItem("token", dataApi.data);
       SweetAlert(
         "Login successful!",
         "Welcome back! You have successfully logged in!",
@@ -147,7 +147,7 @@ const Login = () => {
         Swal.fire(
           "Password Reset Failed!",
           result.message ||
-          "An error occurred while resetting your password. Please try again later.",
+            "An error occurred while resetting your password. Please try again later.",
           "error"
         );
       }
@@ -169,6 +169,7 @@ const Login = () => {
 
       const data = await res.json();
       if (data.success) {
+        localStorage.setItem("token", data.data);
         SweetAlert(
           "Login google success!",
           "Welcome back! You have successfully logged in!",

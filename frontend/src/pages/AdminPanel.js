@@ -99,13 +99,16 @@ const AdminPanel = () => {
         <div>
           <nav className="grid p-4">
             <Link to={"all-users"} className="px-2 py-1 hover:bg-slate-100">
-              All Users
+              Users Management
             </Link>
             <Link to={"all-orders"} className="px-2 py-1 hover:bg-slate-100">
-              All Orders
+              Orders Management
             </Link>
             <Link to={"all-products"} className="px-2 py-1 hover:bg-slate-100">
-              All product
+              Product Management
+            </Link>
+            <Link to={"all-message"} className="px-2 py-1 hover:bg-slate-100">
+              Message Management
             </Link>
             <Link
               to={"revenue-statistics"}

@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 
 async function updateProfile(req, res) {
   try {
-    const { userId, name, phone, newPassword, confirmPassword } = req.body;
+    const { userId, name, phone, address, newPassword, confirmPassword } = req.body;
 
     const user = await userModel.findById(userId);
     if (!user) {
@@ -27,6 +27,10 @@ async function updateProfile(req, res) {
     }
 
     const updateData = { name, phone };
+
+    if (address) {
+      updateData.address = address;
+    }
 
     if (newPassword || confirmPassword) {
       if (!newPassword || !confirmPassword) {

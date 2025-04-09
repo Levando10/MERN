@@ -8,11 +8,14 @@ const payos = new PayOS(
 
 const createOrder = async (req, res) => {
   try {
-    const { paymentMethod, userId } = req.body;
+    const { paymentMethod, userId, address } = req.body;
+    if (!address) {
+      return res.status(400).json({ message: "Address empty!", success: false })
+    }
     const cartItems = await addToCartModel.find({ userId });
-    
+
     if (cartItems.length === 0) {
-      return res.status(400).json({ message: "Cart empty!" });
+      return res.status(402).json({ message: "Cart empty!", success: false });
     }
 
     const items = cartItems.map((item) => ({
@@ -31,8 +34,8 @@ const createOrder = async (req, res) => {
         const orderPayment = {
           amount: totalAmount,
           orderCode: new Date().getTime(),
-          returnUrl: `http://localhost:3000/payment-success?userId=${userId}`,
-          cancelUrl: `http://localhost:3000/payment-failed?userId=${userId}`,
+          returnUrl: `https://my-mern-shop.vercel.app/payment-success?userId=${userId}`,
+          cancelUrl: `https://my-mern-shop.vercel.app/payment-failed?userId=${userId}`,
           description: "Pay shopping bills",
         };
 
@@ -40,6 +43,7 @@ const createOrder = async (req, res) => {
         return res.status(201).json({
           message: "Redirecting to payment...",
           paymentUrl: paymentLink.checkoutUrl,
+          success: true
         });
       } catch (error) {
         console.error(

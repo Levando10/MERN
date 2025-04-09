@@ -10,6 +10,8 @@ const changePassword = require("../controller/user/changePassword");
 const authToken = require("../middleware/authToken");
 const userLogout = require("../controller/user/userLogout");
 const allUsers = require("../controller/user/allUsers");
+const allOrders = require("../controller/user/allOrders");
+const updateDeliveryStatus = require("../controller/user/updateDeliveryStatus");
 const updateUser = require("../controller/user/updateUser");
 const banUser = require("../controller/user/banUser");
 const verifyEmailController = require("../controller/user/verifyEmailController");
@@ -31,11 +33,15 @@ const updateAddToCartProduct = require("../controller/user/updateAddToCartProduc
 const deleteAddToCartProduct = require("../controller/user/deleteAddToCartProduct");
 const searchProduct = require("../controller/product/searchProduct");
 const filterProductController = require("../controller/product/filterProduct");
+const addReview = require("../controller/user/review/addReview");
+const chatMessage = require("../controller/user/chat/chatMessage");
 const adminStatistics = require("../controller/statistic/adminStatistic");
+const adminReplyReview = require("../controller/user/review/adminReplyReview");
 
 // Payment
 router.post("/create-order", authToken, createOrder);
 router.post("/confirm-payment", authToken, confirmPayment);
+router.post("/update-delivery-status", authToken, updateDeliveryStatus);
 
 // Account
 router.post("/signup", userSignUpController);
@@ -47,12 +53,16 @@ router.get("/history-payment", authToken, PaymentHistory);
 router.post("/update-avatar", authToken, updateAvatar);
 router.post("/update-profile", authToken, updateProfile);
 router.get("/user-details", authToken, userDetailsController);
+router.post('/create-review',authToken, addReview);
+router.post('/fetchMessages',authToken, chatMessage);
 router.get("/userLogout", userLogout);
 
 //admin panel
+router.get("/all-orders", authToken, allOrders);
 router.get("/all-user", authToken, allUsers);
 router.post("/update-user", authToken, updateUser);
 router.post("/ban-user", authToken, banUser);
+router.post("/admin-reply", authToken, adminReplyReview);
 router.get("/revenue-statistic", adminStatistics);
 
 //product
