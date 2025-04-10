@@ -37,6 +37,7 @@ const addReview = require("../controller/user/review/addReview");
 const chatMessage = require("../controller/user/chat/chatMessage");
 const adminStatistics = require("../controller/statistic/adminStatistic");
 const adminReplyReview = require("../controller/user/review/adminReplyReview");
+const allReviews = require("../controller/user/review/allReviews");
 
 // Payment
 router.post("/create-order", authToken, createOrder);
@@ -59,6 +60,7 @@ router.get("/userLogout", userLogout);
 
 //admin panel
 router.get("/all-orders", authToken, allOrders);
+router.get("/reviews", authToken, allReviews);
 router.get("/all-user", authToken, allUsers);
 router.post("/update-user", authToken, updateUser);
 router.post("/ban-user", authToken, banUser);

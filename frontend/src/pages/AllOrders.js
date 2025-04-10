@@ -115,7 +115,7 @@ const Allorders = () => {
           .toLowerCase();
 
       const matchesName = normalizeText(order.userId?.name || "").includes(
-        normalizeText(searchOrderName)
+        normalizeText(debouncedSearchOrderName)
       );
 
       const orderDate = moment(order.createdAt);
@@ -130,7 +130,7 @@ const Allorders = () => {
 
       return matchesName && matchesDate && matchesDeliveryStatus;
     });
-  }, [allOrders, searchOrderName, orderStartDate, deliveryStatusFilter]);
+  }, [allOrders, debouncedSearchOrderName, orderStartDate, deliveryStatusFilter]);
 
   const sortedOrders = React.useMemo(() => {
     let sortedData = [...filteredOrders];
@@ -214,7 +214,7 @@ const Allorders = () => {
   return (
     <>
       <h2 style={{ padding: "4px" }} className="font-bold text-lg">
-        Management Order
+        Management Orders
       </h2>
       <div className="bg-white pb-4">
         <div className="flex gap-4 items-center mb-4">

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Logo from "./Logo";
 import { GrSearch } from "react-icons/gr";
 import { FaRegCircleUser } from "react-icons/fa6";
@@ -10,10 +10,13 @@ import { setUserDetails } from "../store/userSlice";
 import ROLE from "../common/role";
 import Context from "../context";
 import SweetAlert from "sweetalert";
+import { Badge, Dropdown } from "antd";
+import { BellOutlined } from "@ant-design/icons";
 
 const Header = () => {
   const user = useSelector((state) => state?.user?.user);
   const dispatch = useDispatch();
+  const [reviews, setReviews] = useState([]);
   const [menuDisplay, setMenuDisplay] = useState(false);
   const context = useContext(Context);
   const navigate = useNavigate();
@@ -59,6 +62,23 @@ const Header = () => {
       navigate("/search");
     }
   };
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      const res = await fetch(SummaryApi.reviews.url, {
+        headers: {
+          "content-type": "application/json",
+        },
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.success) setReviews(data.data);
+    };
+
+    if (user && user?.role === "ADMIN") {
+      fetchReviews();
+    }
+  }, [user]);
 
   return (
     <header className="h-16 shadow-md bg-white fixed w-full z-40">
@@ -139,6 +159,16 @@ const Header = () => {
                   )}
                 </nav>
                 <nav className="flex flex-col gap-2">
+                  {user?.role === ROLE.ADMIN && (
+                    <Link
+                      to={"/admin-panel/revenue-statistics"}
+                      className="block px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
+                    >
+                      Management Revenue
+                    </Link>
+                  )}
+                </nav>
+                <nav className="flex flex-col gap-2">
                   {user?.role && (
                     <Link
                       to="/profile?tab=account"
@@ -161,6 +191,55 @@ const Header = () => {
               </div>
             )}
           </div>
+
+          {user?._id && user?.role === ROLE.ADMIN && (
+            <Dropdown
+              overlay={
+                <div className="bg-white shadow-lg rounded-md max-h-96 overflow-y-auto w-80 p-3">
+                  {reviews.length === 0 ? (
+                    <div className="text-center text-gray-400">No reviews</div>
+                  ) : (
+                    reviews.map((item) => (
+                      <div
+                        key={item._id}
+                        onClick={() => {
+                          if (item.productId) {
+                            navigate(`/product/${item.productId}`);
+                          }
+                        }}
+                        className={`flex gap-3 items-start p-2 rounded-md mb-2 ${
+                          item.isAdminReplied ? "text-gray-400" : "text-black"
+                        }`}
+                      >
+                        {item.userId?.profilePic ? (
+                          <img
+                            src={item.userId.profilePic}
+                            alt="avatar"
+                            className="w-8 h-8 rounded-full"
+                          />
+                        ) : (
+                          <FaRegCircleUser className="w-8 h-8" />
+                        )}
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">
+                            {item.userId?.name || "Unknown"} — Rating:{" "}
+                            {item.rating}
+                          </p>
+                          <p className="text-sm line-clamp-2">{item.review}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              }
+              trigger={["hover"]}
+              placement="bottomRight"
+            >
+              <Badge count={reviews.filter((r) => !r.isAdminReplied).length}>
+                <BellOutlined className="text-2xl cursor-pointer ml-4" />
+              </Badge>
+            </Dropdown>
+          )}
 
           {user?._id && user?.role === ROLE.GENERAL && (
             <Link to={"/cart"} className="text-2xl relative">

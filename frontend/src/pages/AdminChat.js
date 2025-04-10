@@ -3,7 +3,7 @@ import SummaryApi from "../common";
 import SweetAlert from "sweetalert";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { io } from "socket.io-client";
-import { toast } from "react-toastify";
+import { notification } from "antd";
 
 const AdminChat = () => {
   const [allUser, setAllUsers] = useState([]);
@@ -115,8 +115,10 @@ const AdminChat = () => {
           ]);
         }
         if (data.from !== "67e7d4d4239e88be03f4c93e") {
-          toast.info(`💬 New messages from ${data.emailUser}`, {
-            position: "top-right",
+          notification.info({
+            message: `💬 New Messages from ${data.emailUser}`,
+            description: "You just received a message from a customer.",
+            placement: "topRight",
           });
         }
       });
