@@ -15,6 +15,7 @@ const ProductDetails = () => {
   const [adminReplies, setAdminReplies] = useState({});
   const [totalRatings, setTotalRatings] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
+  const [selectedStar, setSelectedStar] = useState(null);
   const [data, setData] = useState({
     productName: "",
     brandName: "",
@@ -287,120 +288,154 @@ const ProductDetails = () => {
         />
       )}
 
+      <div className="flex items-center gap-2 mb-6">
+        <span className="text-sm text-gray-700 font-medium">
+          Filter by rating:
+        </span>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onClick={() => setSelectedStar(selectedStar === star ? null : star)}
+            className={`flex items-center gap-1 border rounded-full px-3 py-1 text-sm transition
+        ${
+          selectedStar === star
+            ? "bg-red-600 text-white"
+            : "bg-gray-100 text-gray-700"
+        }`}
+          >
+            {Array.from({ length: star }).map((_, i) => (
+              <FaStar key={i} className="text-yellow-400 text-xs" />
+            ))}
+            <span>({star})</span>
+          </button>
+        ))}
+      </div>
+
       <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">
           Customer Reviews
         </h2>
+
         <div className="space-y-6">
-          {data?.reviews && data?.reviews.length > 0 ? (
-            data.reviews.map((review, index) => (
-              <div
-                key={index}
-                className="p-4 border-b border-gray-200 last:border-b-0"
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300">
-                    <img
-                      src={review?.userId?.profilePic || "/default-user.png"}
-                      alt="User Profile"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-lg text-gray-800">
-                      {review?.userId?.name}
-                    </span>
-                    <p className="text-sm text-gray-500">
-                      {review?.userId?.email}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {formatDate(review?.createdAt)}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1 mb-2">
-                  {[...Array(5)].map((_, starIndex) => (
-                    <span key={starIndex}>
-                      {review?.rating > starIndex ? (
-                        <FaStar className="text-yellow-500" />
-                      ) : (
-                        <FaStar className="text-gray-300" />
-                      )}
-                    </span>
-                  ))}
-                  <span className="ml-2 text-sm text-gray-500">
-                    ({review?.rating})
-                  </span>
-                </div>
-                <p className="text-gray-700 text-[16px] mb-4">
-                  {review?.review}
-                </p>
-                {review?.isAdminReplied && review?.adminReply ? (
-                  <div className="bg-gray-100 p-4 border-l-4 border-red-500 rounded-lg mt-4">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-400">
-                        <img
-                          src={
-                            review?.adminId?.profilePic || "/admin-avatar.png"
-                          }
-                          alt="Admin Profile"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-red-600 flex items-center gap-2">
-                          {review?.adminId?.name || "Admin"}
-                          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-md">
-                            Administrator
-                          </span>
-                        </span>
-                        <p className="text-xs text-gray-600">
-                          {review?.adminId?.email || "admin@example.com"}
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-gray-800 text-[15px]">
-                      {review?.adminReply}
-                    </p>
-                  </div>
-                ) : (
-                  user?.role === "ADMIN" && (
-                    <div className="mt-4">
-                      <label
-                        htmlFor="adminReply"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Reply to user:
-                      </label>
-                      <textarea
-                        style={{ resize: "unset" }}
-                        id={`adminReply-${review._id}`}
-                        name={`adminReply-${review._id}`}
-                        rows={3}
-                        placeholder="Write your reply..."
-                        value={adminReplies[review._id] || ""}
-                        onChange={(e) =>
-                          setAdminReplies({
-                            ...adminReplies,
-                            [review._id]: e.target.value,
-                          })
-                        }
-                        className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+          {(() => {
+            const filteredReviews =
+              data?.reviews?.filter((review) =>
+                selectedStar ? review.rating === selectedStar : true
+              ) || [];
+
+            return filteredReviews.length > 0 ? (
+              filteredReviews.map((review, index) => (
+                <div
+                  key={index}
+                  className="p-4 border-b border-gray-200 last:border-b-0"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300">
+                      <img
+                        src={review?.userId?.profilePic || "/default-user.png"}
+                        alt="User Profile"
+                        className="w-full h-full object-cover"
                       />
-                      <button
-                        onClick={() => handleAdminReply(review._id)}
-                        className="mt-2 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
-                      >
-                        Send Reply
-                      </button>
                     </div>
-                  )
-                )}
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500 text-center">No reviews yet</p>
-          )}
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-lg text-gray-800">
+                        {review?.userId?.name}
+                      </span>
+                      <p className="text-sm text-gray-500">
+                        {review?.userId?.email}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {formatDate(review?.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1 mb-2">
+                    {[...Array(5)].map((_, starIndex) => (
+                      <span key={starIndex}>
+                        {review?.rating > starIndex ? (
+                          <FaStar className="text-yellow-500" />
+                        ) : (
+                          <FaStar className="text-gray-300" />
+                        )}
+                      </span>
+                    ))}
+                    <span className="ml-2 text-sm text-gray-500">
+                      ({review?.rating})
+                    </span>
+                  </div>
+
+                  <p className="text-gray-700 text-[16px] mb-4">
+                    {review?.review}
+                  </p>
+
+                  {review?.isAdminReplied && review?.adminReply ? (
+                    <div className="bg-gray-100 p-4 border-l-4 border-red-500 rounded-lg mt-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-400">
+                          <img
+                            src={
+                              review?.adminId?.profilePic || "/admin-avatar.png"
+                            }
+                            alt="Admin Profile"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-red-600 flex items-center gap-2">
+                            {review?.adminId?.name || "Admin"}
+                            <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-md">
+                              Administrator
+                            </span>
+                          </span>
+                          <p className="text-xs text-gray-600">
+                            {review?.adminId?.email || "admin@example.com"}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-gray-800 text-[15px]">
+                        {review?.adminReply}
+                      </p>
+                    </div>
+                  ) : (
+                    user?.role === "ADMIN" && (
+                      <div className="mt-4">
+                        <label
+                          htmlFor="adminReply"
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                          Reply to user:
+                        </label>
+                        <textarea
+                          style={{ resize: "unset" }}
+                          id={`adminReply-${review._id}`}
+                          name={`adminReply-${review._id}`}
+                          rows={3}
+                          placeholder="Write your reply..."
+                          value={adminReplies[review._id] || ""}
+                          onChange={(e) =>
+                            setAdminReplies({
+                              ...adminReplies,
+                              [review._id]: e.target.value,
+                            })
+                          }
+                          className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        />
+                        <button
+                          onClick={() => handleAdminReply(review._id)}
+                          className="mt-2 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+                        >
+                          Send Reply
+                        </button>
+                      </div>
+                    )
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-center">No reviews yet</p>
+            );
+          })()}
         </div>
       </div>
     </div>

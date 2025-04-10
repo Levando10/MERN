@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FaRegCircleUser } from "react-icons/fa6";
 import SummaryApi from "../common";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../helpers/firebaseConfig";
 import ROLE from "../common/role";
@@ -98,24 +98,56 @@ const AdminPanel = () => {
         </div>
         <div>
           <nav className="grid p-4">
-            <Link to={"all-users"} className="px-2 py-1 hover:bg-slate-100">
-              Users Management
-            </Link>
-            <Link to={"all-orders"} className="px-2 py-1 hover:bg-slate-100">
-              Orders Management
-            </Link>
-            <Link to={"all-products"} className="px-2 py-1 hover:bg-slate-100">
-              Product Management
-            </Link>
-            <Link to={"all-message"} className="px-2 py-1 hover:bg-slate-100">
-              Message Management
-            </Link>
-            <Link
-              to={"revenue-statistics"}
-              className="px-2 py-1 hover:bg-slate-100"
+            <NavLink
+              to={"all-users"}
+              className={({ isActive }) =>
+                `px-2 py-1 hover:bg-slate-100 ${
+                  isActive ? "bg-red-100 font-semibold text-red-600" : ""
+                }`
+              }
             >
-              Revenue statistics
-            </Link>
+              Management Users
+            </NavLink>
+            <NavLink
+              to={"all-orders"}
+              className={({ isActive }) =>
+                `px-2 py-1 hover:bg-slate-100 ${
+                  isActive ? "bg-red-100 font-semibold text-red-600" : ""
+                }`
+              }
+            >
+              Management Orders
+            </NavLink>
+            <NavLink
+              to={"all-products"}
+              className={({ isActive }) =>
+                `px-2 py-1 hover:bg-slate-100 ${
+                  isActive ? "bg-red-100 font-semibold text-red-600" : ""
+                }`
+              }
+            >
+              Management Product
+            </NavLink>
+            <NavLink
+              to={"all-message"}
+              className={({ isActive }) =>
+                `px-2 py-1 hover:bg-slate-100 ${
+                  isActive ? "bg-red-100 font-semibold text-red-600" : ""
+                }`
+              }
+            >
+              Management Message
+            </NavLink>
+            <NavLink
+              to={"revenue-statistics"}
+              className={({ isActive }) =>
+                `px-2 py-1 hover:bg-slate-100 ${
+                  isActive ? "bg-red-100 font-semibold text-red-600" : ""
+                }`
+              }
+            >
+              Management Revenue
+            </NavLink>
           </nav>
         </div>
       </aside>
