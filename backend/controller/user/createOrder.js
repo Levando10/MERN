@@ -34,8 +34,10 @@ const createOrder = async (req, res) => {
         const orderPayment = {
           amount: totalAmount,
           orderCode: new Date().getTime(),
-          returnUrl: `https://my-mern-shop.vercel.app/payment-success?userId=${userId}`,
-          cancelUrl: `https://my-mern-shop.vercel.app/payment-failed?userId=${userId}`,
+          returnUrl: `https://my-mern-shop.vercel.app/payment-success?userId=${userId}&address=${encodeURIComponent(address)}`,
+          cancelUrl: `https://my-mern-shop.vercel.app/payment-failed?userId=${userId}&address=${encodeURIComponent(address)}`,
+          // returnUrl: `http://localhost:3000/payment-success?userId=${userId}&address=${encodeURIComponent(address)}`,
+          // cancelUrl: `http://localhost:3000/payment-failed?userId=${userId}&address=${encodeURIComponent(address)}`,
           description: "Pay shopping bills",
         };
 

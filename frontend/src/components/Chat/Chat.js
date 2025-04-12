@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import { FaCommentAlt } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { io } from "socket.io-client";
-import { toast } from "react-toastify";
 import SweetAlert from "sweetalert";
 import SummaryApi from "../../common";
+import { notification } from "antd";
 
 const Chat = () => {
   const user = useSelector((state) => state?.user?.user);
@@ -47,7 +47,7 @@ const Chat = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     // const newSocket = io("http://localhost:8080", {
-    const newSocket = io("https://mern-v6c4.onrender.com", {
+      const newSocket = io("https://mern-v6c4.onrender.com", {
       auth: { token },
     });
 
@@ -73,14 +73,18 @@ const Chat = () => {
         ]);
 
         if (data.from === "67e7d4d4239e88be03f4c93e") {
-          toast.info(`💬 New messages from Admin`, {
-            position: "top-right",
+          notification.info({
+            message: `💬 New messages from ADMIN`,
+            description: "You just received a message from a ADMIN.",
+            placement: "topRight",
           });
         }
 
         if (data.to === "67e7d4d4239e88be03f4c93e") {
-          toast.info(`💬 New messages from User ${data.emailUser}`, {
-            position: "top-right",
+          notification.info({
+            message: `💬 New Messages from User ${data.emailUser}`,
+            description: "You just received a message from a customer.",
+            placement: "topRight",
           });
         }
       });
