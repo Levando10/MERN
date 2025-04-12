@@ -93,6 +93,7 @@ const ProductDetails = () => {
       }, 300);
       setAdminReplies((prev) => ({ ...prev, [reviewId]: "" }));
       fetchProductDetails();
+      window.dispatchEvent(new Event("review-updated"));
     }
   };
 

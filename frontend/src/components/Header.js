@@ -80,9 +80,17 @@ const Header = () => {
       if (data.success) setReviews(data.data);
     };
 
+    const handleReviewUpdated = () => {
+      fetchReviews();
+    };
+
     if (user && user?.role === "ADMIN") {
       fetchReviews();
+      window.addEventListener("review-updated", handleReviewUpdated);
     }
+    return () => {
+      window.removeEventListener("review-updated", handleReviewUpdated);
+    };
   }, [user]);
 
   return (
