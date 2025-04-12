@@ -4,7 +4,7 @@ async function allReviews(req, res) {
     const reviews = await reviewModel
       .find()
       .populate("userId")
-      .sort({ createdAt: -1 });
+      .sort({ isAdminReplied: 1, createdAt: -1 });
     res.json({ success: true, data: reviews });
   } catch (err) {
     res.json({

@@ -5,6 +5,7 @@ const getProductDetails = async (req, res) => {
     const { productId } = req.body;
     const product = await productModel.findById(productId).populate({
       path: "reviews",
+      options: { sort: { createdAt: -1 } },
       populate: [
         {
           path: "userId",

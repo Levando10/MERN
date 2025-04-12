@@ -63,6 +63,11 @@ const Header = () => {
     }
   };
 
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+  };
+
   useEffect(() => {
     const fetchReviews = async () => {
       const res = await fetch(SummaryApi.reviews.url, {
@@ -226,6 +231,9 @@ const Header = () => {
                             {item.rating}
                           </p>
                           <p className="text-sm line-clamp-2">{item.review}</p>
+                          <p className="text-sm line-clamp-2">
+                            Create: {formatDate(item?.createdAt)}
+                          </p>
                         </div>
                       </div>
                     ))

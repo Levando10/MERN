@@ -345,12 +345,12 @@ export default function Profile() {
                       placeholder="Write your review here"
                       style="width: 100%; min-height: 60px; max-height: 60px; resize: unset; min-width: 310px;"
                       ${item.isReviewed ? "disabled" : ""}
-                  >${
-                    realStar?.review || "Good product, very satisfied!"
-                  }</textarea>
+                  >${realStar?.review || ""}</textarea>
                 </div>
 
-                <div style="margin-top: 8px;">
+                <div style="margin-top: 8px;visibility: ${
+                  item.isReviewed ? "visible" : "hidden"
+                } ">
                   <input type="checkbox" id="reviewed-${index}" name="reviewed-${index}" 
                   ${item.isReviewed ? "checked disabled" : ""}>
                   <label for="reviewed-${index}" style="margin-left: 5px; font-size: 14px;">
@@ -450,6 +450,19 @@ export default function Profile() {
               review,
             };
           });
+
+          const notReviewed = updatedItems.find((item) => item.review === "");
+          if (notReviewed) {
+            Swal.fire({
+              title: "Review incomplete!",
+              text: "Please review all products before saving.",
+              icon: "warning",
+              confirmButtonText: "OK",
+              confirmButtonColor: "#F97316",
+            });
+            return false;
+          }
+
           saveReview(order._id, updatedItems);
         }
       },
@@ -735,21 +748,19 @@ export default function Profile() {
                 />
               </div>
               <div className="mt-auto flex gap-2">
-                {["All", "Pending", "Shipped", "Delivered"].map(
-                  (status) => (
-                    <button
-                      key={status}
-                      onClick={() => setDeliveryStatusFilter(status)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium border transition ${
-                        deliveryStatusFilter === status
-                          ? "text-white bg-red-600 hover:bg-red-700"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                      }`}
-                    >
-                      {status}
-                    </button>
-                  )
-                )}
+                {["All", "Pending", "Shipped", "Delivered"].map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setDeliveryStatusFilter(status)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium border transition ${
+                      deliveryStatusFilter === status
+                        ? "text-white bg-red-600 hover:bg-red-700"
+                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    {status}
+                  </button>
+                ))}
               </div>
             </div>
             {errorMessage && (
@@ -790,15 +801,17 @@ export default function Profile() {
                         <p className="text-lg font-bold">
                           {formatCurrency(order.totalAmount)}
                         </p>
-                        <p
-                          className={`text-sm font-semibold ${
-                            order.status === "Paid"
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {order.status}
-                        </p>
+                        {order.statusDelivery === "Delivered" && (
+                          <div className="text-sm text-gray-500">
+                            {order.items[0]?.isReviewed ? (
+                              <p className="text-sm text-gray-600">Reviewed</p>
+                            ) : (
+                              <p className="text-sm text-gray-600">
+                                Waiting for review
+                              </p>
+                            )}
+                          </div>
+                        )}
                         <p
                           style={{ maxWidth: "85px", display: "inline-block" }}
                           className={`px-2 py-1 rounded ${
